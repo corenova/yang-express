@@ -16,7 +16,7 @@ module.exports = (->
 
   @get '/:key', (req, res, next) ->
     match = res.locals.target["__#{req.params.key}__"]
-    if match? then
+    if match?
       res.locals.result = match
       next()
     else next 'route'

@@ -13,52 +13,57 @@ yang    = require 'yang-js'
 bp      = require 'body-parser'
 
 module.exports = ((opts={}) ->
-  @locals.model = switch
-    when opts.schema? then yang.parse(opts.schema)
-    when opts.data?   then yang.compose(opts.data)
-    else yang.Registry
-  @locals.store = @locals.model.eval opts.data
-  
+  try
+    @locals.model = model = yang.parse opts.schema
+    @locals.data  = data  = model.eval opts.data
+  catch e
+    console.error "unable to initialize yang-express without valid opts.schema"
+    throw e
+
   @use bp.urlencoded(extended:true), bp.json(strict:true)
 
-  # main routing loop
-  @use (->
-    @all '*', (req, res, next) ->
-      res.locals.target ?= req.app.locals.store
-      next()
-
-    @param 'target', (req, res, next, target) ->
-      if res.locals.target.hasOwnProperty target
-        res.locals.target = res.locals.target[target]
-        next()
+  @use "/#{model.tag}", (->
+    @route '*'
+    .all (req, res, next) ->
+      req.yang = model.locate req.path
+      if req.yang? then next()
       else next 'route'
-
-    # reached end of route and getting back current content
-    @get '/', (req, res, next) ->
-      res.locals.result = req.target
-      next()
-
-    @use require('./router/module'), require('./router/container'), require('./router/list')
+    .get (req, res, next) ->
+      if req.yang.kind in [ 'module', 'container', 'list' ]
+        if data[model.tag]?.hasOwnProperty '__'
+          res.send data[model.tag].__.get "/#{model.tag}#{req.path}"
+          next()
+        else res.status(404).end()
+      else res.status(404).end()
+    .put (req, res, next) ->
+      if req.yang.kind in [ 'module', 'container', 'list' ]
+        if req.path is '/'
+          target = data[model.tag] = req.body
+        else
+          target = data[model.tag].__.get "/#{model.tag}#{req.path}"
+          target?.__.set req.body
+        if target?
+          res.send target
+        else res.status(400).end()
+      else res.status(404).end()
+    .post (req, res, next) ->
+      switch req.yang.kind
+        when 'rpc', 'action'
+          if req.yang.input?
+            req.body = req.yang.input.eval req.body
+            next()
+        when 'list'
+          if req.yang.tag of req.body
+            req.body = req.yang.eval req.body
+            next()
+          else res.status(400).end()
+        else res.status(404).end()
+    .options (req, res, next) -> res.send 'TBD'
+    .report  (req, res, next) -> res.send 'TBD'
+    .copy    (req, res, next) -> res.send 'TBD'
     
-    # nested loop back to self to process additional sub-routes
-    @use '/:target', this
-
     return this
   ).call express.Router()
-
-  @use (req, res, next) ->
-    if res.locals.result?
-      res.setHeader 'Expires', '-1'
-      res.send res.locals.result
-      next()
-    else next 'route'
-
-  # default 'catch-all' error handler
-  @use (err, req, res, next) ->
-    console.error err
-    res.status(err.status ? 500).send error: switch
-      when err instanceof Error then err.toString()
-      else JSON.stringify err
-      
+  
   return this
 ).bind express()

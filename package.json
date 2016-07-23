@@ -1,6 +1,6 @@
 {
   "name": "yang-express",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "YANG model-driven middleware router for Express web framework",
   "keywords": [
     "yang",
@@ -23,7 +23,7 @@
   "dependencies": {
     "body-parser": "^1.15.2",
     "express": "^4.14.0",
-    "yang-js": "^0.14.9"
+    "yang-js": "^0.14.20"
   },
   "devDependencies": {
     "coffee-script": ">=1.7.0",
@@ -39,7 +39,7 @@
     "prebuild": "npm run clean -s && mkdir -p dist",
     "build:src": "coffee -o lib -c src",
     "build": "npm run build:src",
-    "prepublish": "npm run test",
+    "prepublish": "npm run build",
     "pretest": "npm run build",
     "test": "mocha"
   }

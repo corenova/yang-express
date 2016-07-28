@@ -1,6 +1,6 @@
 {
   "name": "yang-express",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "YANG model-driven middleware router for Express web framework",
   "keywords": [
     "yang",

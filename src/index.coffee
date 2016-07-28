@@ -17,13 +17,20 @@ createApplication = ((opts={}) ->
   unless opts.models instanceof Array and opts.models.length
     throw new Error "must provide one-or-more models"
 
-  @use bp.urlencoded(extended:true), bp.json(strict:true)
+  @use bp.urlencoded(extended:true), bp.json(strict:true, type:'*/json')
   @set 'json spaces', 2
 
+  data = opts.data
   for model in opts.models
     model = yang.parse model if typeof model is 'string'
-    data  = model.eval opts.data
-    @use "/#{model.tag}", (mrouter model, data)
+    data  = model.eval data
+    @use (mrouter model, data)
+    console.log "mounted '#{model.tag}' model"
+
+  # default error handler
+  @use (err, req, res, next) ->
+    console.error err.stack
+    res.status(500).send(error: message: err.message)
   
   return this
 ).bind express()
@@ -32,3 +39,4 @@ exports = module.exports = createApplication
 exports.run = (opts={}) ->
   app = createApplication opts
   app.listen (opts.port ? 5050)
+exports.Router = mrouter

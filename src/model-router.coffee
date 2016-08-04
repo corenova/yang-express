@@ -7,7 +7,7 @@ module.exports = ((model, data) ->
 
   @route '*'
   .all (req, res, next) ->
-    req.y = model.inspect req.path, data
+    req.y = model.access req.path, data
     if req.y? then next()
     else next 'route'
 

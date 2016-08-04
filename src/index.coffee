@@ -37,6 +37,9 @@ createApplication = ((opts={}) ->
 
 exports = module.exports = createApplication
 exports.run = (opts={}) ->
+  opts.port ?= 5050
   app = createApplication opts
-  app.listen (opts.port ? 5050)
+  app.listen opts.port
+  console.log "listening on #{opts.port}"
+  return app
 exports.Router = mrouter

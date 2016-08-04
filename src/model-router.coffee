@@ -1,46 +1,13 @@
 express = require 'express'
-yang    = require 'yang-js'
-
-# helper routine to parse REST URI and discover XPATH and Yang expr based on model
-discover = (uri='', data) ->
-  expr = this
-  keys = uri.split('/').filter (x) -> x? and !!x
-  str = ''
-  while (key = keys.shift()) and expr?
-    if expr.kind is 'list'
-      str += "[key() = #{key}]"
-      key = keys.shift()
-      li = true
-      break unless key?
-    expr = expr.locate key
-    str += "/#{expr.datakey}" if expr?
-  return if keys.length or not expr?
-
-  xpath = yang.XPath.parse str
-  temp = xpath
-  key = temp.tag while (temp = temp.xpath)
-  
-  match = xpath.eval data if data?
-  match = switch
-    when not match?.length then undefined
-    when /list$/.test(expr.kind) and not li then match
-    else match[0]
-      
-  return {
-    schema: expr
-    path:   xpath
-    match:  match
-    key:    key
-  }
 
 module.exports = ((model, data) ->
-  unless model instanceof yang.Yang
+  unless model?
     console.log model
     throw new Error "must supply Yang data model to create model router"
 
   @route '*'
   .all (req, res, next) ->
-    req.y = discover.call model, req.path, data
+    req.y = model.inspect req.path, data
     if req.y? then next()
     else next 'route'
 

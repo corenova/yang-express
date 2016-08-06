@@ -50,7 +50,7 @@ module.exports = ((model, data) ->
         list = [ list ] unless list instanceof Array
         for item in list
           match.__._value[key].add item
-        res.send switch
+        res.status(201).send switch
           when key? then "#{key}": list
           else list
       else
@@ -71,7 +71,24 @@ module.exports = ((model, data) ->
   .options (req, res, next) ->
     { schema, path, match, key } = req.y
     console.log "[#{model.tag}] calling OPTIONS on #{path}"
-    res.send "#{schema}"
+    info =
+      name:   schema.datakey
+      kind:   schema.kind
+      path:   "#{path}"
+      exists: match?
+    info[k] = v for k, v of schema.exprs
+      .filter (x) -> x.data isnt true and x.kind not in [ 'uses', 'grouping' ]
+      .reduce ((a,b) -> a[k] = v for own k, v of b.toObject(); a), {}
+    nodes = schema.exprs.filter (x) -> x.data is true
+    if nodes.length > 0
+      info.data = nodes.reduce ((a,b) ->
+        a[b.tag] = kind: b.kind
+        a[b.tag][k] = v for k, v of b.exprs
+          .filter (x) -> x.data isnt true and x.kind not in [ 'uses', 'grouping' ]
+          .reduce ((a,b) -> a[k] = v for own k, v of b.toObject(); a), {}
+        return a
+      ), {}
+    res.send info
     
   .report  (req, res, next) -> res.send 'TBD'
   .copy    (req, res, next) -> res.send 'TBD'

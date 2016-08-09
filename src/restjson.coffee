@@ -1,6 +1,11 @@
+# RESTJSON interface generator module
+#
+ 
 express = require 'express'
+bp      = require 'body-parser'
 
-module.exports = ((model, data) ->
+# RESTJSON model router
+mrouter = ((model, data) ->
   unless model?
     console.log model
     throw new Error "must supply Yang data model to create model router"
@@ -43,7 +48,7 @@ module.exports = ((model, data) ->
       when 'list'
         unless match instanceof Array
           return res.status(400).end()
-          
+
         unless key of req.body
           req.body = "#{key}": req.body
         list = schema.eval(req.body)[key]
@@ -56,7 +61,7 @@ module.exports = ((model, data) ->
       else
         console.warn "[#{model.tag}] cannot POST on '#{schema.kind}'"
         res.status(400).end()
-        
+
   .delete (req, res, next) ->
     { schema, path, match, key } = req.y
     console.log "[#{model.tag}] calling DELETE on #{path}"
@@ -67,7 +72,7 @@ module.exports = ((model, data) ->
       return res.status(400).end()
     match.__?.parent.remove match['@key']
     res.status(204).end()
-    
+
   .options (req, res, next) ->
     { schema, path, match, key } = req.y
     console.log "[#{model.tag}] calling OPTIONS on #{path}"
@@ -78,7 +83,14 @@ module.exports = ((model, data) ->
       exists: match?
     info[k] = v for k, v of schema.exprs
       .filter (x) -> x.data isnt true and x.kind not in [ 'uses', 'grouping' ]
-      .reduce ((a,b) -> a[k] = v for own k, v of b.toObject(); a), {}
+      .reduce ((a,b) ->
+        for k, v of b.toObject()
+          if a[k] instanceof Object
+            a[k][kk] = vv for kk, vv of v if v instanceof Object
+          else
+            a[k] = v
+        return a
+      ), {}
     nodes = schema.exprs.filter (x) -> x.data is true
     if nodes.length > 0
       info.data = nodes.reduce ((a,b) ->
@@ -89,9 +101,16 @@ module.exports = ((model, data) ->
         return a
       ), {}
     res.send info
-    
-  .report  (req, res, next) -> res.send 'TBD'
-  .copy    (req, res, next) -> res.send 'TBD'
-  
+
   return this
 ).bind express.Router()
+
+module.exports = (app) ->
+  { models, data } = app.locals
+  console.info "[restjson] binding #{models.length} models"
+  app.use bp.urlencoded(extended:true), bp.json(strict:true, type:'*/json')
+  app.set 'json spaces', 2
+  for model in models
+    app.use (mrouter model, data) 
+    console.info "[restjson] mounted '#{model.tag}' model"
+

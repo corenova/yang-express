@@ -10,36 +10,44 @@
 # for higher-order features to utilize it for associating additional routing endpoints.
 express = require 'express'
 yang    = require 'yang-js'
-bp      = require 'body-parser'
-mrouter = require './model-router'
 
 createApplication = ((opts={}) ->
   unless opts.models instanceof Array and opts.models.length
-    throw new Error "must provide one-or-more models"
+    throw new Error "must provide one (or more) models"
+  unless opts.controllers instanceof Array and opts.controllers.length
+    throw new Error "must provide one (or more) controllers"
 
-  @use bp.urlencoded(extended:true), bp.json(strict:true, type:'*/json')
-  @set 'json spaces', 2
+  # bind the models 
+  @locals.models = opts.models.map (model) -> switch
+    when typeof model is 'string' then yang.parse model
+    else model
 
-  data = opts.data
-  for model in opts.models
-    model = yang.parse model if typeof model is 'string'
-    data  = model.eval data
-    @use (mrouter model, data)
-    console.log "mounted '#{model.tag}' model"
+  # bind the data
+  @locals.data = opts.data
+  @locals.data = model.eval @locals.data for model in @locals.models
 
-  # default error handler
+  # bind the controller(s)
+  @locals.controllers = opts.controllers.map (controller) -> switch
+    when typeof controller is 'string' then require "./#{controller}"
+    else controller
+  @locals.controllers.forEach (control) => control this
+
+  # bind the view(s) if any
+  @locals.views = opts.views ? []
+  @locals.views.forEach (view) => view this
+
+  # setup default error handler
   @use (err, req, res, next) ->
     console.error err.stack
     res.status(500).send(error: message: err.message)
+
+  # attach a 'run' function
+  @run = (port=5000) =>
+    console.log "listening on #{port}"
+    @emit 'run', @listen port
+    return this
   
   return this
 ).bind express()
 
 exports = module.exports = createApplication
-exports.run = (opts={}) ->
-  opts.port ?= 5050
-  app = createApplication opts
-  app.listen opts.port
-  console.log "listening on #{opts.port}"
-  return app
-exports.Router = mrouter

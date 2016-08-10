@@ -81,8 +81,8 @@ mrouter = ((model, data) ->
       kind:   schema.kind
       path:   "#{path}"
       exists: match?
-    info[k] = v for k, v of schema.exprs
-      .filter (x) -> x.data isnt true and x.kind not in [ 'uses', 'grouping' ]
+    info[k] = v for k, v of schema.attrs
+      .filter (x) -> x.kind not in [ 'uses', 'grouping' ]
       .reduce ((a,b) ->
         for k, v of b.toObject()
           if a[k] instanceof Object
@@ -91,12 +91,11 @@ mrouter = ((model, data) ->
             a[k] = v
         return a
       ), {}
-    nodes = schema.exprs.filter (x) -> x.data is true
-    if nodes.length > 0
-      info.data = nodes.reduce ((a,b) ->
+    if schema.nodes.length > 0
+      info.data = schema.nodes.reduce ((a,b) ->
         a[b.tag] = kind: b.kind
-        a[b.tag][k] = v for k, v of b.exprs
-          .filter (x) -> x.data isnt true and x.kind not in [ 'uses', 'grouping' ]
+        a[b.tag][k] = v for k, v of b.attrs
+          .filter (x) -> x.kind not in [ 'uses', 'grouping' ]
           .reduce ((a,b) -> a[k] = v for own k, v of b.toObject(); a), {}
         return a
       ), {}

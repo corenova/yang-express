@@ -1,6 +1,6 @@
 {
   "name": "yang-express",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "description": "YANG model-driven middleware router for Express web framework",
   "keywords": [
     "yang",
@@ -24,7 +24,7 @@
     "body-parser": "^1.15.2",
     "express": "^4.14.0",
     "socket.io": "^1.4.8",
-    "yang-js": "^0.15.4"
+    "yang-js": "^0.15.5"
   },
   "devDependencies": {
     "coffee-script": ">=1.7.0",

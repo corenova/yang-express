@@ -8,7 +8,7 @@ module.exports = (app) -> app.on 'run', (server) ->
   io.on 'connection', (socket) ->
     rooms = models.map (model) -> socket.join model.tag
 
-  # # watch core and send events
-  # @on 'merge', (cores...) ->
-  #   io.to('yang-forge-core')
-  #     .emit 'infuse', cores: cores.map (x) -> x.dump()
+  # watch models and send events
+  models.forEach (model) ->
+    model.on 'changed', (changes...) ->
+      io.to(model.tag).emit 'changed'

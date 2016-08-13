@@ -9,45 +9,84 @@
 # to dynamically instanticate the web server and makes itself available
 # for higher-order features to utilize it for associating additional routing endpoints.
 express = require 'express'
-yang    = require 'yang-js'
+Yang    = require 'yang-js'
 
-createApplication = ((opts={}) ->
-  unless opts.models instanceof Array and opts.models.length
-    throw new Error "must provide one (or more) models"
-  unless opts.controllers instanceof Array and opts.controllers.length
-    throw new Error "must provide one (or more) controllers"
+FEATURES =
+  restjson:  require './restjson'
+  websocket: require './websocket'
+  openapi:   require './openapi'
 
-  # bind the models 
-  @locals.models = opts.models.map (model) -> switch
-    when typeof model is 'string' then yang.parse model
-    else model
+createApplication = ((init=->) ->
+  @set 'links', []
+  
+  # overload existing enable/disable
+  @enable = ((f, args...) -> args.forEach (name) =>
+    if name of FEATURES and @disabled(name)
+      console.info "[#{name}] enabling..."
+      FEATURES[name]?.call this, (res) ->
+        console.info "[#{name}] enabled ok"
+    f.call this, name
+    @emit 'enable', name
+  ).bind this, @enable
+  @disable = ((f, args...) -> args.forEach (name) =>
+    if name of FEATURES and @enabled(name)
+      console.info "[#{name}] disabling feature..."
+      #@get(name).destroy?()
+    f.call this, name
+    @emit 'disable', name
+  ).bind this, @disable
 
-  # bind the data
-  @locals.data = opts.data
-  @locals.data = model.eval @locals.data for model in @locals.models
+  # support new 'link/unlink' method
+  @link = (schema) ->
+    console.info "[yang-express] registering a new link"
+    schema = switch
+      when schema instanceof Yang then schema
+      when typeof schema is 'string' then Yang.parse schema
+      else Yang.compose schema
+    
+    unless schema instanceof Yang
+      throw new Error "must supply Yang data model to create model-driven link"
+      
+    model = schema.eval @get('initial state')
+    @set "link:#{model._id}", model
+    @get('links').push model
+    @emit 'link', model._id, model
+    console.info "[yang-express] registered 'link:#{model._id}'"
+    return model
+    
+  @unlink = (id) ->
+    model = @get "link:#{id}"
+    return unless model?
+    @disable "link:#{id}"
+    @emit 'unlink', id, model
+  
+  # overload existing .listen()
+  @listen = ((listen, args...) ->
+    server = listen.apply this, args
+    server.on 'listening', =>
+      @set 'port', server.address().port
+      @emit 'running', server
+    return server
+  ).bind this, @listen
 
-  # bind the controller(s)
-  @locals.controllers = opts.controllers.map (controller) -> switch
-    when typeof controller is 'string' then require "./#{controller}"
-    else controller
-  @locals.controllers.forEach (control) => control this
+  # setup linker middleware (it ignores '/')
+  @use (req, res, next) ->
+    return next 'route' if req.path is '/'
+    for link in req.app.get('links') when req.app.enabled "link:#{link._id}"
+      req.link = link.access req.path
+      break if req.link?
+    next()
 
-  # bind the view(s) if any
-  @locals.views = opts.views ? []
-  @locals.views.forEach (view) => view this
+  console.info "[yang-express] start of a new journey"
+  init.call this
 
   # setup default error handler
   @use (err, req, res, next) ->
     console.error err.stack
     res.status(500).send(error: message: err.message)
-
-  # attach a 'run' function
-  @run = (port=5000) =>
-    console.log "listening on #{port}"
-    @emit 'run', @listen port
-    return this
-  
+    
   return this
 ).bind express()
-
+  
 exports = module.exports = createApplication
+exports.register = (name, handler) -> FEATURES[name] = handler; this

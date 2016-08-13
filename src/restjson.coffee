@@ -1,24 +1,21 @@
-# RESTJSON interface generator module
+# RESTJSON interface feature
 #
  
-express = require 'express'
-bp      = require 'body-parser'
+bp = require 'body-parser'
 
-# RESTJSON model router
-mrouter = ((model, data) ->
-  unless model?
-    console.log model
-    throw new Error "must supply Yang data model to create model router"
+module.exports = (done=->) ->
+  @set 'json spaces', 2
+  @use bp.urlencoded(extended:true), bp.json(strict:true, type:'*/json')
 
   @route '*'
   .all (req, res, next) ->
-    req.y = model.access req.path, data
-    if req.y? then next()
+    if req.app.enabled('restjson') and req.link? and req.accepts('json')
+      next()
     else next 'route'
 
   .get (req, res, next) ->
-    { schema, path, match, key } = req.y
-    console.log "[#{model.tag}] calling GET on #{path}"
+    { model, schema, path, match, key } = req.link
+    console.log "[restjson:#{model._id}] calling GET on #{path}"
     unless match?
       return res.status(404).end()
     res.send switch
@@ -26,12 +23,12 @@ mrouter = ((model, data) ->
       else match
 
   .put (req, res, next) ->
-    { schema, path, match, key } = req.y
-    console.log "[#{model.tag}] calling PUT on #{path}"
+    { model, schema, path, match, key } = req.link
+    console.log "[restjson:#{model._id}] calling PUT on #{path}"
     unless match?
       return res.status(404).end()
     unless typeof match is 'object'
-      console.warn "[#{model.tag}] cannot PUT on '#{schema.kind}'"
+      console.warn "[restjson:#{model._id}] cannot PUT on '#{schema.kind}'"
       return res.status(400).end()
 
     match[k] = v for own k, v of req.body when match.hasOwnProperty k
@@ -41,41 +38,40 @@ mrouter = ((model, data) ->
       else match
 
   .post (req, res, next) ->
-    { schema, path, match, key } = req.y
-    console.log "[#{model.tag}] calling POST on #{path}"
+    { model, schema, path, match, key } = req.link
+    console.log "[restjson:#{model._id}] calling POST on #{path}"
     switch schema.kind
       when 'rpc', 'action' then res.send "Coming Soon!"
       when 'list'
         unless match instanceof Array
           return res.status(400).end()
-
         unless key of req.body
           req.body = "#{key}": req.body
-        list = schema.eval(req.body)[key]
+        list = schema.apply(req.body)[key]
         list = [ list ] unless list instanceof Array
-        for item in list
-          match.__._value[key].add item
+        match.__.content.add item for item in list
         res.status(201).send switch
           when key? then "#{key}": list
           else list
       else
-        console.warn "[#{model.tag}] cannot POST on '#{schema.kind}'"
+        console.warn "[restjson:#{model._id}] cannot POST on '#{schema.kind}'"
         res.status(400).end()
 
   .delete (req, res, next) ->
-    { schema, path, match, key } = req.y
-    console.log "[#{model.tag}] calling DELETE on #{path}"
+    { model, schema, path, match, key } = req.link
+    console.log "[restjson:#{model._id}] calling DELETE on #{path}"
     unless match?
       return res.status(404).end()
     unless schema.kind is 'list' and match not instanceof Array
-      console.warn "[#{model.tag}] cannot DELETE on '#{schema.kind}'"
+      console.warn "[restjson:#{model._id}] cannot DELETE on '#{schema.kind}'"
       return res.status(400).end()
+
     match.__?.parent.remove match['@key']
     res.status(204).end()
 
   .options (req, res, next) ->
-    { schema, path, match, key } = req.y
-    console.log "[#{model.tag}] calling OPTIONS on #{path}"
+    { model, schema, path, match, key } = req.link
+    console.log "[restjson:#{model._id}] calling OPTIONS on #{path}"
     info =
       name:   schema.datakey
       kind:   schema.kind
@@ -92,7 +88,7 @@ mrouter = ((model, data) ->
         return a
       ), {}
     if schema.nodes.length > 0
-      info.data = schema.nodes.reduce ((a,b) ->
+      info.paths = schema.nodes.reduce ((a,b) ->
         a[b.tag] = kind: b.kind
         a[b.tag][k] = v for k, v of b.attrs
           .filter (x) -> x.kind not in [ 'uses', 'grouping' ]
@@ -100,16 +96,5 @@ mrouter = ((model, data) ->
         return a
       ), {}
     res.send info
-
-  return this
-).bind express.Router()
-
-module.exports = (app) ->
-  { models, data } = app.locals
-  console.info "[restjson] binding #{models.length} models"
-  app.use bp.urlencoded(extended:true), bp.json(strict:true, type:'*/json')
-  app.set 'json spaces', 2
-  for model in models
-    app.use (mrouter model, data) 
-    console.info "[restjson] mounted '#{model.tag}' model"
-
+    
+  done()

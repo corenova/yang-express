@@ -1,6 +1,6 @@
 # RESTJSON interface feature
 #
- 
+
 bp = require 'body-parser'
 
 module.exports = (done=->) ->
@@ -47,9 +47,13 @@ module.exports = (done=->) ->
           return res.status(400).end()
         unless key of req.body
           req.body = "#{key}": req.body
+        # TODO: below should be schema.eval?
         list = schema.apply(req.body)[key]
+        unless list?
+          return res.status(400).end()
         list = [ list ] unless list instanceof Array
-        match.__.content.add item for item in list
+        # below looks circular but match NOT same as __.content
+        match.__.content.add list...
         res.status(201).send switch
           when key? then "#{key}": list
           else list
@@ -96,5 +100,5 @@ module.exports = (done=->) ->
         return a
       ), {}
     res.send info
-    
+
   done()

@@ -73,7 +73,7 @@ createApplication = ((init=->) ->
   @use (req, res, next) ->
     return next 'route' if req.path is '/'
     for link in req.app.get('links') when req.app.enabled "link:#{link._id}"
-      req.link = link.access req.path
+      req.link = link.in req.path
       break if req.link?
     next()
 

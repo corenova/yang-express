@@ -34,14 +34,11 @@ module.exports = (done=->)->
       produces: [ "application/json" ]
       # TODO: need to discover from 'restjson'
       paths: links.reduce ((a,link) ->
-        { schema } = link.access '/'
-        paths = switch
-          when schema.kind is 'module'
-            schema.nodes.reduce ((a,b) ->
-              a["/#{b.tag}"] = b.toObject()
-              return a
-            ), {}
-          else "/#{schema.tag}": schema.toObject()
+        { schema } = link.in '/'
+        paths = schema.nodes.reduce ((a,b) ->
+          a["/#{b.datakey}"] = b.toObject()
+          return a
+        ), {}
         a[k] = v for k, v of paths
         return a
       ), {}

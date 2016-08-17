@@ -60,6 +60,7 @@ app = require 'yang-express' ->
 	  name: 'Apache-2.0'
 	}
   }
+  @enable 'yangapi'
   @enable 'restjson'
   @enable 'websocket'
   petstore = @link schema
@@ -125,7 +126,7 @@ newly *linked* `Model`.
 ### unlink (id)
 
 This new facility is the counter-part to the [link](#link-schema-data)
-operation. It will interally **disable** the referenced link `id` if
+operation. It will internally **disable** the referenced link `id` if
 found and currently **enabled**.
 
 ## Tests

@@ -76,6 +76,7 @@ When the `yang-express` app runs, it will auto-generate the data model
 using the `schema` and dynamically route the following endpoints:
 
 endpoint        | methods         | feature   | description
+---             | ---             | ---       | ---
 /openapi.spec   | GET             | openapi   | openapi/swagger 2.0 specification (JSON or YAML)
 /petstore.yang  | GET/POST/DELETE | yangapi   | manage YANG schema link
 /socket.io      |                 | websocket | socket.io interface

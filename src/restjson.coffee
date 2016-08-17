@@ -136,7 +136,7 @@ restjson.paths = (schema) ->
           summary: "Update details on #{b.tag}"
           responses: expected
     if b.kind is 'list'
-      key = b.key.tag ? 'id'
+      key = b.key?.tag ? 'id'
       a["#{path}/{#{key}}"] = 
         get:
           summary: "View details on #{b.tag}"

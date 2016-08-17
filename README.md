@@ -44,7 +44,7 @@ schema = """
       leaf name { type string; mandatory true; }
       leaf tag  { type string; }
     }
-    list pets { key "id"; uses Pet; }
+    list pet { key "id"; uses Pet; }
   }
 """
 app = require 'yang-express' ->
@@ -81,12 +81,12 @@ endpoint        | methods         | feature   | description
 /openapi.spec   | GET             | openapi   | openapi/swagger 2.0 specification (JSON or YAML)
 /petstore.yang  | GET/POST/DELETE | yangapi   | manage YANG schema link
 /socket.io      |                 | websocket | socket.io interface
-/pets           | GET/POST        | restjson  | list or create one or more new pets
-/pets/:id       | GET/PUT/DELETE  | restjson  | view/update/delete a specific pet
-/pets/:id/:leaf | GET             | restjson  | get the value of id or name or tag
-/pets/:leaf     | GET             | restjson  | gets all id or name or tag in list
+/pet            | GET/POST        | restjson  | list or create one or more new pets
+/pet/:id        | GET/PUT/DELETE  | restjson  | view/update/delete a specific pet
+/pet/:id/:leaf  | GET             | restjson  | get the value of id or name or tag
+/pet/:leaf      | GET             | restjson  | gets all id or name or tag in list
 
-Also `/petstore:pets/...` and `/ps:pets/...` are supported endpoints.
+Also `/petstore:pet/...` and `/ps:pet/...` are supported endpoints.
 
 In addition, `OPTIONS` method will be associated with each
 [restjson](./src/restjson.coffee) transacted endpoint which can be

@@ -15,17 +15,19 @@ FEATURES =
   restjson:  require './restjson'
   websocket: require './websocket'
   openapi:   require './openapi'
+  yangapi:   require './yangapi'
 
 createApplication = ((init=->) ->
   @set 'links', []
   
   # overload existing enable/disable
-  @enable = ((f, args...) -> args.forEach (name) =>
+  @enable = ((f, name, opts) ->
     if name of FEATURES and @disabled(name)
       console.info "[#{name}] enabling..."
-      FEATURES[name]?.call this, (res) ->
+      FEATURES[name]?.call this, opts, (res) =>
         console.info "[#{name}] enabled ok"
-    f.call this, name
+        @set name, res
+    else f.call this, name
     @emit 'enable', name
   ).bind this, @enable
   @disable = ((f, args...) -> args.forEach (name) =>
@@ -37,7 +39,7 @@ createApplication = ((init=->) ->
   ).bind this, @disable
 
   # support new 'link/unlink' method
-  @link = (schema) ->
+  @link = (schema, data) ->
     console.info "[yang-express] registering a new link"
     schema = switch
       when schema instanceof Yang then schema
@@ -47,7 +49,7 @@ createApplication = ((init=->) ->
     unless schema instanceof Yang
       throw new Error "must supply Yang data model to create model-driven link"
       
-    model = schema.eval @get('initial state')
+    model = schema.eval data
     @set "link:#{model._id}", model
     @get('links').push model
     @emit 'link', model._id, model

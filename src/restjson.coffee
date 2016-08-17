@@ -3,8 +3,8 @@
 
 bp = require 'body-parser'
 
-module.exports = (done=->) ->
-  @set 'json spaces', 2
+restjson = (opts={}, done=->) ->
+  @set 'json spaces', opts.spaces ? 2
   @use bp.urlencoded(extended:true), bp.json(strict:true, type:'*/json')
 
   @route '*'
@@ -100,5 +100,56 @@ module.exports = (done=->) ->
         return a
       ), {}
     res.send info
+  done restjson
 
-  done()
+# TODO: room for optimization here...
+restjson.paths = (schema) ->
+  schema.nodes.reduce ((a,b) ->
+    return a unless b.kind in [ 'list', 'container' ]
+    
+    path = "/#{b.datakey}"
+    subpaths = restjson.paths(b)
+    expected = 
+      200:
+        description: "Expected response for a valid request"
+        schema: '$ref': "#/definitions/#{b.tag}"
+    a[path] = switch b.kind
+      when 'list'
+        get:
+          summary: "List all #{b.tag}(s)"
+          responses:
+            200:
+              description: "Expected response for a valid request"
+              schema: '$ref': "#/definitions/#{b.tag}s"
+        post:
+          summary: "Create a #{b.tag}"
+          responses:
+            201:
+              schema: '$ref': "#/definitions/#{b.tag}"
+            400:
+              description: "Unexpected request"
+      when 'container'
+        get:
+          summary: "View details on #{b.tag}"
+          responses: expected
+        put:
+          summary: "Update details on #{b.tag}"
+          responses: expected
+    if b.kind is 'list'
+      key = b.key.tag ? 'id'
+      a["#{path}/{#{key}}"] = 
+        get:
+          summary: "View details on #{b.tag}"
+          responses: expected
+        put:
+          summary: "Update details on #{b.tag}"
+          responses: expected
+        delete:
+          summary: "Delete a #{b.tag}"
+          responses: expected
+      a["#{path}/{#{key}}#{k}"] = v for k, v of subpaths
+    a["#{path}#{k}"] = v for k, v of subpaths
+    return a
+  ), {}
+
+module.exports = restjson

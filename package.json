@@ -1,7 +1,7 @@
 {
   "name": "yang-express",
-  "version": "0.3.3",
-  "description": "YANG model-driven middleware router for Express web framework",
+  "version": "0.3.4",
+  "description": "YANG model-driven Express framework",
   "keywords": [
     "yang",
     "express",
@@ -19,13 +19,13 @@
   "homepage": "https://github.com/corenova/yang-express",
   "license": "Apache-2.0",
   "repository": "corenova/yang-express",
-  "main": "lib/index.js",
+  "main": "lib/main.js",
   "dependencies": {
     "body-parser": "^1.15.2",
     "express": "^4.14.0",
     "js-yaml": "^3.6.1",
     "socket.io": "^1.4.8",
-    "yang-js": "^0.15.12"
+    "yang-js": "^0.15.13"
   },
   "devDependencies": {
     "coffee-script": ">=1.7.0",
@@ -43,6 +43,7 @@
     "build": "npm run build:src",
     "prepublish": "npm run build",
     "pretest": "npm run build",
-    "test": "mocha"
+    "test": "mocha",
+    "example:petstore": "coffee ./example/petstore.coffee"
   }
 }

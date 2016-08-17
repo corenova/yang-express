@@ -1,7 +1,7 @@
 # socket.io (websockets) feature interface module
 #
 
-module.exports = (done=->) ->
+module.exports = (opts={}, done=->) ->
   @once 'running', (server) ->
     console.info "[websocket] binding to server"
     app = this

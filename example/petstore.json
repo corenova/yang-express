@@ -1,0 +1,14 @@
+{
+  "petstore:pets": [
+    {
+      "id": "1",
+      "name": "happy",
+      "tag": "friendly"
+    },
+    {
+      "id": "2",
+      "name": "boba",
+      "tag": "hyper"
+    }
+   ]
+}

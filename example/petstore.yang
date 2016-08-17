@@ -1,0 +1,10 @@
+module petstore {
+  prefix ps;
+  description "Yang Petstore";
+  grouping Pet {
+    leaf id   { type uint64; mandatory true; }
+    leaf name { type string; mandatory true; }
+    leaf tag  { type string; }
+  }
+  list pet { key "id"; uses Pet; }
+}

@@ -29,7 +29,7 @@ restjson = (opts={}, done=->) ->
     switch 
       when kind in [ 'rpc', 'action' ] then res.send "Coming Soon!"
       # below condition is kinda ugly...
-      when kind is 'list' and req.prop.parent.__.schema.kind is 'list'
+      when kind is 'list'
         res.status(201).send (transact req.prop, -> @merge req.body)
       else res.status(400).end()
 

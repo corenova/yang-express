@@ -1,8 +1,8 @@
 # YANGAPI management feature
 
-mimes = [ 'yang' ]
-exports = module.exports = (opts={}, done=->)->
+# TODO: change to /yangapi router
 
+yangapi = (opts={}, done=->)->
   @route '/:module.yang'
   .all (req, res, next) ->
     { links } = req.app.settings
@@ -33,7 +33,6 @@ exports = module.exports = (opts={}, done=->)->
     unless req.link?
       return res.status(404).end()
     req.app.unlink req.link._id
-      
-  done exports
-  
-exports.mimes = mimes
+  done yangapi
+
+module.exports = yangapi

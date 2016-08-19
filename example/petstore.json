@@ -1,5 +1,5 @@
 {
-  "petstore:pets": [
+  "petstore:pet": [
     {
       "id": "1",
       "name": "happy",

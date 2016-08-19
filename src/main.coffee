@@ -71,12 +71,12 @@ createApplication = ((init=->) ->
     return server
   ).bind this, @listen
 
-  # setup linker middleware (it ignores '/')
-  @use (req, res, next) ->
+  # setup builtin linker middleware for current 'app' (it ignores '/')
+  @use (req, res, next) =>
     return next 'route' if req.path is '/'
-    for link in req.app.get('links') when req.app.enabled "link:#{link._id}"
-      req.link = link.in req.path
-      break if req.link?
+    for link in @get('links') when @enabled("link:#{link._id}") and link.in(req.path)?
+      req.link = link
+      break
     next()
 
   console.info "[yang-express] start of a new journey"

@@ -19,7 +19,7 @@ app = require('..') ->
   
   petstore = @link require('./petstore.yang'), require('./petstore.json')
   petstore.on 'update', (prop, prev) ->
-    console.log prop
+    console.log "update for #{prop.path}"
 
 module.exports = app
 

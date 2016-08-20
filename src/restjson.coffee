@@ -28,9 +28,8 @@ restjson = (opts={}, done=->) ->
     kind = req.prop.schema.kind
     switch 
       when kind in [ 'rpc', 'action' ] then res.send "Coming Soon!"
-      # below condition is kinda ugly...
-      when kind is 'list'
-        res.status(201).send (transact req.prop, -> @merge req.body)
+      when kind is 'list' and not req.prop.key?
+        res.status(201).send (transact req.prop, -> @create req.body)
       else res.status(400).end()
 
   .options (req, res, next) ->
@@ -60,7 +59,7 @@ restjson = (opts={}, done=->) ->
     res.send info
   done restjson
 
-# TODO: room for optimization here...
+# TODO: room for optimization here... (should be agnostic to openapi/swagger)
 restjson.paths = (schema) ->
   schema.nodes.reduce ((a,b) ->
     return a unless b.kind in [ 'list', 'container' ]

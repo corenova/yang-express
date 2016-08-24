@@ -36,14 +36,12 @@ exports = module.exports = (opts={}, done=->)->
       consumes: [ "application/json" ]
       produces: [ "application/json" ]
       paths: links.reduce ((a,link) ->
-        model = link.in '/'
-        schema = model.__.schema
+        schema = link.in('/').schema
         a[k] = v for k, v of restjson.paths(schema)
         return a
       ), {}
       definitions: links.reduce ((a,link) ->
-        model = link.in '/'
-        schema = model.__.schema
+        schema = link.in('/').schema
         getdefs = (schema) ->
           match = schema.nodes.filter (x) -> x.kind in [ 'list', 'container' ]
           match.reduce ((a,b) -> a.concat (getdefs b)... ), match

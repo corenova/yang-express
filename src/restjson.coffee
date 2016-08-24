@@ -33,11 +33,11 @@ restjson = (opts={}, done=->) ->
       else res.status(400).end()
 
   .options (req, res, next) ->
-    { schema, path } = req.prop
+    { schema, path, props } = req.prop
     info =
-      name:   schema.datakey
-      kind:   schema.kind
-      path:   path
+      name: req.prop.name
+      kind: schema.kind
+      path: "#{req.prop.path}"
     info[k] = v for k, v of schema.attrs
       .filter (x) -> x.kind not in [ 'uses', 'grouping' ]
       .reduce ((a,b) ->
@@ -49,7 +49,7 @@ restjson = (opts={}, done=->) ->
         return a
       ), {}
     if schema.nodes.length > 0
-      info.paths = schema.nodes.reduce ((a,b) ->
+      info.props = schema.nodes.reduce ((a,b) ->
         a[b.tag] = kind: b.kind
         a[b.tag][k] = v for k, v of b.attrs
           .filter (x) -> x.kind not in [ 'uses', 'grouping' ]

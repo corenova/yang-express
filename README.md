@@ -63,9 +63,9 @@ app = require 'yang-express' ->
   @enable 'yangapi'
   @enable 'restjson'
   @enable 'websocket'
-  petstore = @link schema
-  petstore.on 'update', (prop, prev) ->
-    console.log prop
+  @open 'petstore', ->
+    @import schema
+	@on 'update', (prop, prev) -> console.log "#{prop.path} triggered update"
 app.listen 5000
 ```
 

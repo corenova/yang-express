@@ -20,10 +20,10 @@ $ npm install yang-express
 * Robust model-driven routing
 * Hotplug runtime models
 * Dynamic interface generators
- * [restjson](./src/restjson.coffee)
- * [websocket](./src/websocket.coffee)
- * [openapi/swagger](./src/openapi.coffee)
- * [yangapi](./src/yangapi.coffee)
+  * [restjson](./src/restjson.coffee)
+  * [websocket](./src/websocket.coffee)
+  * [openapi/swagger](./src/openapi.coffee)
+  * [yangapi](./src/yangapi.coffee)
 * Hierarchical (deeply nested) data tree
 * Adaptive validations
 * Flexibe RPCs and notifications
@@ -76,21 +76,25 @@ project.
 When the `yang-express` app runs, it will auto-generate the data model
 using the `schema` and dynamically route the following endpoints:
 
-endpoint        | methods         | feature   | description
----             | ---             | ---       | ---
-/openapi.spec   | GET             | openapi   | openapi/swagger 2.0 specification (JSON or YAML)
-/petstore.yang  | GET/POST/DELETE | yangapi   | manage YANG schema link
-/socket.io      |                 | websocket | socket.io interface
-/pet            | GET/POST        | restjson  | list or create one or more new pets
-/pet/:id        | GET/PUT/DELETE  | restjson  | view/update/delete a specific pet
-/pet/:id/:leaf  | GET             | restjson  | get the value of id or name or tag
-/pet/:leaf      | GET             | restjson  | gets all id or name or tag in list
+endpoint        | methods          | feature   | description
+---             | ---              | ---       | ---
+/openapi.spec   | GET              | openapi   | openapi/swagger 2.0 specification (JSON or YAML)
+/petstore.yang  | **RUMDO** + POST | yangapi   | manage YANG schema link
+/socket.io      |                  | websocket | socket.io interface
+/pet            | **RUMDO** + POST | restjson  | operate on the pet collection
+/pet/:id        | **RUMDO**        | restjson  | operate on a specific pet
+/pet/:id/:leaf  | **RUMDO**        | restjson  | operate on a pet's attribute
+/pet/:leaf      | **RUMDO**        | restjson  | bulk operate attributes*
 
-Also `/petstore:pet/...` and `/ps:pet/...` are supported endpoints.
+*RUMDO*: READ (GET), UPDATE (PUT), MODIFY (PATCH), DELETE, OPTIONS
 
-In addition, `OPTIONS` method will be associated with each
-[restjson](./src/restjson.coffee) transacted endpoint which can be
-used to describe the data.
+Bulk operation on all matching attributes can be used to set a new
+value for every matching attribute in the collection. 
+
+Alternative API endpoints can be fully-qualified `/petstore:pet/...`
+as well as prefix-qualified `/ps:pet/...`. This is the suggested
+convention when using multiple models that may have namespace
+conflict.
 
 You can try this example implementation located inside the
 [example/](./example) folder:
@@ -102,8 +106,8 @@ $ npm run example:petstore
 ## API
 
 This module contains **all** the methods available inside
-[Express](http://expressjs.com) and further extends the following
-additional methods.
+[Express](http://expressjs.com) instance and further override/extend
+the following additional methods.
 
 ### enable (name, opts={})
 
@@ -116,18 +120,20 @@ for that plugin.
 This call *overloads* prior `disable` method and provides ability to
 *deactivate* a currently *active* **feature plugin** instance.
 
-### link (schema, data)
+### open (name, callback)
 
-This new facility provides the primary mechanism to generate the
-`Model` instance using the provided `schema/data` parameters and
-allows the [enabled](#enable-name-opts) feature plugins to trasact the
-newly *linked* `Model`.
+This new facility provides the primary mechanism to initialize a new
+[Yang.Store](http://github.com/corenova/yang-js) instance inside the
+[Express](http://expressjs.com) runtime and associate various YANG
+model instances to be served by the `Store`.
 
-### unlink (id)
+It currently supports opening *multiple* stores internally but in most
+scenarios, only one `Store` instance should be sufficient.
 
-This new facility is the counter-part to the [link](#link-schema-data)
-operation. It will internally **disable** the referenced link `id` if
-found and currently **enabled**.
+The `callback` if provided will be called with the `Store` instance as
+the `this` context and is a convenience pattern for grouping all
+`Store` related operations before it is *registered* within the
+express application instance.
 
 ## Tests
 

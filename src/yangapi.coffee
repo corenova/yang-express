@@ -1,7 +1,5 @@
 # YANGAPI management feature
 
-# TODO: change to /yangapi router
-
 yangapi = (opts={}, done=->)->
   @route '/:module.yang'
   .all (req, res, next) ->

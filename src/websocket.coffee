@@ -30,14 +30,14 @@ module.exports = (opts={}, done=->) ->
         console.log this
 
     # setup initial update sync notifications
-    @get('links').forEach (model) ->
-      model.on 'update', (prop) -> io.to(@_id).emit 'sync', data: prop.path
+    @get('stores').forEach (store) ->
+      store.on 'update', (prop) -> io.to(@name).emit 'sync', data: prop.path
 
-    # watch for link/unlink activity
-    @on 'link', (id, model) ->
-      model.on 'update', (prop) -> io.to(@_id).emit 'sync', data: prop.path
-    @on 'unlink', (id, model) ->
-      io.to(model._id).emit 'disconnect'
+    # # watch for link/unlink activity
+    # @on 'link', (id, model) ->
+    #   model.on 'update', (prop) -> io.to(@_id).emit 'sync', data: prop.path
+    # @on 'unlink', (id, model) ->
+    #   io.to(model._id).emit 'disconnect'
       
     done io
 

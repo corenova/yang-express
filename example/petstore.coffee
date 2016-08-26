@@ -16,10 +16,13 @@ app = require('..') ->
   @enable 'yangapi'
   @enable 'restjson'
   @enable 'websocket'
-  
-  petstore = @link require('./petstore.yang'), require('./petstore.json')
-  petstore.on 'update', (prop, prev) ->
-    console.log "update for #{prop.path}"
+
+  @open 'petstore', ->
+    @import  require('./petstore.yang')
+    @connect require('./petstore.json')
+
+    @on 'update', '/petstore:pet', (prop) ->
+      console.log "[@name] update for #{prop.path}"
 
 module.exports = app
 

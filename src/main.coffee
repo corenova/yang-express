@@ -18,9 +18,9 @@ FEATURES =
   yangapi:   require './yangapi'
 
 createApplication = ((init=->) ->
-  @set 'links', []
+  @set 'stores', []
   
-  # overload existing enable/disable
+  # overload existing enable
   @enable = ((f, name, opts) ->
     if name of FEATURES and @disabled(name)
       console.info "[#{name}] enabling..."
@@ -30,6 +30,8 @@ createApplication = ((init=->) ->
     else f.call this, name
     @emit 'enable', name
   ).bind this, @enable
+  
+  # overload existing disable
   @disable = ((f, args...) -> args.forEach (name) =>
     if name of FEATURES and @enabled(name)
       console.info "[#{name}] disabling feature..."
@@ -38,30 +40,6 @@ createApplication = ((init=->) ->
     @emit 'disable', name
   ).bind this, @disable
 
-  # support new 'link/unlink' method
-  @link = (schema, data) ->
-    console.info "[yang-express] registering a new link"
-    schema = switch
-      when schema instanceof Yang then schema
-      when typeof schema is 'string' then Yang.parse schema
-      else Yang.compose schema
-    
-    unless schema instanceof Yang
-      throw new Error "must supply Yang data model to create model-driven link"
-      
-    model = schema.eval data
-    @set "link:#{model._id}", model
-    @get('links').push model
-    @emit 'link', model._id, model
-    console.info "[yang-express] registered 'link:#{model._id}'"
-    return model
-    
-  @unlink = (id) ->
-    model = @get "link:#{id}"
-    return unless model?
-    @disable "link:#{id}"
-    @emit 'unlink', id, model
-  
   # overload existing .listen()
   @listen = ((listen, args...) ->
     server = listen.apply this, args
@@ -71,16 +49,28 @@ createApplication = ((init=->) ->
     return server
   ).bind this, @listen
 
+  # provide new 'open' feature which will create a new Yang.Store as
+  # necessary
+  @open = (name='yang-express', callback) ->
+    store = @get name
+    store ?= new Yang.Store name
+    callback?.call? store
+    unless @enabled('name')
+      @set name, store
+      @get('stores').push store
+    return store
+  
   # setup builtin linker middleware for current 'app' (it ignores '/')
   @use (req, res, next) =>
     return next 'route' if req.path is '/'
-    for link in @get('links') when @enabled("link:#{link._id}") and link.in(req.path)?
-      req.link = link
+    for store in @get('stores') when store.in(req.path)?
+      req.link = store
       break
     next()
 
-  console.info "[yang-express] start of a new journey"
+  console.info "[yang-express] initializing..."
   init.call this
+  console.info "[yang-express] start of a new journey"
 
   # setup default error handler
   @use (err, req, res, next) ->

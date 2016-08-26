@@ -14,7 +14,7 @@ restjson = (opts={}, done=->) ->
   @route '*'
   .all (req, res, next) ->
     if req.app.enabled('restjson') and req.link? and req.accepts('json')
-      console.log "[restjson:#{req.link._id}] calling #{req.method} on #{req.path}"
+      console.log "[restjson:#{req.link.name}] calling #{req.method} on #{req.path}"
       req.prop = req.link.in req.path
       next()
     else next 'route'
@@ -65,7 +65,7 @@ restjson.paths = (schema) ->
     return a unless b.kind in [ 'list', 'container' ]
     
     path = "/#{b.datakey}"
-    subpaths = restjson.paths(b)
+    subpaths = restjson.paths(b) 
     expected = 
       200:
         description: "Expected response for a valid request"

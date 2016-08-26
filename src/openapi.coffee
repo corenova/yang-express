@@ -28,20 +28,20 @@ exports = module.exports = (opts={}, done=->)->
     else next 'route'
 
   .get (req, res, next) ->
-    { restjson, links } = req.app.settings
+    { restjson, stores } = req.app.settings
     spec =
       swagger: '2.0'
       info: info
       host: "#{os.hostname()}:#{req.app.get('port')}"
       consumes: [ "application/json" ]
       produces: [ "application/json" ]
-      paths: links.reduce ((a,link) ->
-        schema = link.in('/').schema
+      paths: stores.reduce ((a,store) ->
+        schema = store.in('/')[0].schema.root
         a[k] = v for k, v of restjson.paths(schema)
         return a
       ), {}
-      definitions: links.reduce ((a,link) ->
-        schema = link.in('/').schema
+      definitions: stores.reduce ((a,store) ->
+        schema = store.in('/')[0].schema.root
         getdefs = (schema) ->
           match = schema.nodes.filter (x) -> x.kind in [ 'list', 'container' ]
           match.reduce ((a,b) -> a.concat (getdefs b)... ), match

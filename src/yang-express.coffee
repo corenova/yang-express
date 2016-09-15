@@ -15,4 +15,6 @@ module.exports = require('../schema/yang-express.yang').bind {
     server.hostname = input.hostname
     express = @use('express')
     express.listen server.port, server.hostname
+    express.on 'listening', ->
+      resolve 'running'
 }

@@ -126,6 +126,7 @@ module yang-express {
    * Remote Procedure Calls
    */
   rpc run {
+    if-feature express;
     input {
       leaf port { type uint16; }
       leaf hostname { type string; }

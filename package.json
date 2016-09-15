@@ -1,6 +1,6 @@
 {
   "name": "yang-express",
-  "version": "0.3.15",
+  "version": "0.4.0",
   "description": "YANG model-driven Express framework",
   "keywords": [
     "yang",
@@ -19,13 +19,19 @@
   "homepage": "https://github.com/corenova/yang-express",
   "license": "Apache-2.0",
   "repository": "corenova/yang-express",
-  "main": "lib/main.js",
+  "main": "lib/yang-express.js",
+  "models": {
+    "ietf-inet-types": "yang-js",
+    "ietf-yang-library": "yang-js",
+    "yang-meta-types": "yang-js",
+    "yang-express": "./lib/yang-express.js"
+  },
   "dependencies": {
     "body-parser": "^1.15.2",
     "express": "^4.14.0",
     "js-yaml": "^3.6.1",
     "socket.io": "^1.4.8",
-    "yang-js": "^0.15.25"
+    "yang-js": "^0.16.0"
   },
   "devDependencies": {
     "coffee-script": ">=1.7.0",
@@ -44,6 +50,6 @@
     "prepublish": "npm run build",
     "pretest": "npm run build",
     "test": "mocha",
-    "example:petstore": "coffee ./example/petstore.coffee"
+    "example:petstore": "coffee ./example/petstore-express.coffee"
   }
 }

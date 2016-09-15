@@ -19,11 +19,7 @@ $ npm install yang-express
 
 * Robust model-driven routing
 * Hotplug runtime models
-* Dynamic interface generators
-  * [restjson](./src/restjson.coffee)
-  * [websocket](./src/websocket.coffee)
-  * [openapi/swagger](./src/openapi.coffee)
-  * [yangapi](./src/yangapi.coffee)
+* [Dynamic interface generators](#dynamic-interface-generators)
 * Hierarchical (deeply nested) data tree
 * Adaptive validations
 * Flexibe RPCs and notifications
@@ -34,39 +30,34 @@ This module also *inherits* all the features from
 
 ## Quick Start
 
+Create a YANG schema [petstore.yang](./example/petstore.yang):
+
+```
+module petstore {
+  prefix ps;
+  description "Yang Petstore";
+  grouping Pet {
+	leaf id   { type uint64; mandatory true; }
+	leaf name { type string; mandatory true; }
+	leaf tag  { type string; }
+  }
+  list pet { key "id"; uses Pet; }
+}
+```
+
+Create a new [Express](http://expressjs.com) app:
+
 ```coffeescript
-schema = """
-  module petstore {
-    prefix ps;
-    description "Yang Petstore";
-    grouping Pet {
-      leaf id   { type uint64; mandatory true; }
-      leaf name { type string; mandatory true; }
-      leaf tag  { type string; }
-    }
-    list pet { key "id"; uses Pet; }
-  }
-"""
-app = require 'yang-express' ->
-  @enable 'openapi', {
-    title: 'Yang Petstore'
-	description: 'Example'
-	version: '0.1'
-	contact: {
-	  name: 'John Doe'
-	  url: 'http://github.com/corenova/yang-express'
-    }
-	license: {
-	  name: 'Apache-2.0'
-	}
-  }
-  @enable 'yangapi'
-  @enable 'restjson'
-  @enable 'websocket'
-  @open 'petstore', ->
-    @import schema
-	@on 'update', (prop, prev) -> console.log "#{prop.path} triggered update"
-app.listen 5000
+require 'yang-js'
+petstore = require('./example/petstore.yang').eval require('./example/petstore.json')
+app = require('yang-express').eval {
+  'yang-express:server':
+    router: [
+	  { name: 'petstore' }
+	]
+}
+app.enable 'restjson'
+app.invoke 'run', port: 5000
 ```
 
 The above example *mimics* the PetStore example found inside the
@@ -74,34 +65,49 @@ The above example *mimics* the PetStore example found inside the
 project.
 
 When the `yang-express` app runs, it will auto-generate the data model
-using the `schema` and dynamically route the following endpoints:
+using the [petstore.yang](./example/petstore.yang) schema and
+dynamically route the following endpoints utilizing the
+[restjson](./src/restjson.litcoffee) dynamic interface generator:
 
-endpoint        | methods          | feature   | description
----             | ---              | ---       | ---
-/openapi.spec   | GET              | openapi   | openapi/swagger 2.0 specification (JSON or YAML)
-/petstore.yang  | **RUMDO** + POST | yangapi   | manage YANG schema link
-/socket.io      |                  | websocket | socket.io interface
-/pet            | **RUMDO** + POST | restjson  | operate on the pet collection
-/pet/:id        | **RUMDO**        | restjson  | operate on a specific pet
-/pet/:id/:leaf  | **RUMDO**        | restjson  | operate on a pet's attribute
-/pet/:leaf      | **RUMDO**        | restjson  | bulk operate attributes*
+endpoint        | methods    | description
+---             | ---        | ---
+/pet            | **CRUMDO** | operate on the pet collection
+/pet/:id        | **RUMDO**  | operate on a specific pet
+/pet/:id/:leaf  | **RUMDO**  | operate on a pet's attribute
+/pet/:leaf      | **RUMDO**  | bulk operate attributes*
 
-*RUMDO*: READ (GET), UPDATE (PUT), MODIFY (PATCH), DELETE, OPTIONS
+You can try this example implementation located inside the
+[example/](./example) folder via:
 
-Bulk operation on all matching attributes can be used to set a new
-value for every matching attribute in the collection. 
+```bash
+$ npm run example:petstore
+```
+
+### CRUMDO
+
+- C: CREATE (POST)
+- R: READ (GET)
+- U: UPDATE (PUT)
+- M: MODIFY (PATCH)
+- D: DELETE
+- O: OPTIONS
 
 Alternative API endpoints can be fully-qualified `/petstore:pet/...`
 as well as prefix-qualified `/ps:pet/...`. This is the suggested
 convention when using multiple models that may have namespace
 conflict.
 
-You can try this example implementation located inside the
-[example/](./example) folder:
+**Note**: Bulk operation on all matching attributes can be used to set a new
+value for every matching attribute in the collection. 
 
-```bash
-$ npm run example:petstore
-```
+## Dynamic Interface Generators
+
+name | description
+--- | ---
+[restjson](./src/restjson.litcoffee)   | REST/JSON API
+[websocket](./src/websocket.litcoffee) | [socket.io](http://socket.io)
+[openapi](./src/openapi.litcoffee)     | OpenAPI/Swagger 2.0 spec
+[yangapi](./src/yangapi.litcoffee)     | YANG module manager (*experimental*)
 
 ## API
 

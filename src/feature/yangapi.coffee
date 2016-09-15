@@ -1,13 +1,23 @@
 # YANGAPI management feature
+#
+# Still in *development*
 
-yangapi = (opts={}, done=->)->
+express = require 'express'
+StoreRouter = (->
+  @route '/:store'
+  .all (req, res, next) ->
+    if req.all.enabled('yangapi') and req.app.enabled(req.params.store)
+      req.store = req.app.get(req.params.store)
+      next()
+    else next 'route'
+
+  return this
+).call express.Router()
+
+ModuleRouter = (->
   @route '/:module.yang'
   .all (req, res, next) ->
-    { links } = req.app.settings
-    if req.app.enabled('yangapi')
-      for link in links when link._id is req.params.module
-        req.link = link
-        break
+    if req.store? and req.params.module of req.store.data
       next()
     else next 'route'
 
@@ -31,6 +41,13 @@ yangapi = (opts={}, done=->)->
     unless req.link?
       return res.status(404).end()
     req.app.unlink req.link._id
+
+  return this
+).call express.Router()
+
+yangapi = (opts={}, done=->)->
+  opts.path ?= '/yangapi'
+  @use opts.path, StoreRouter, SchemaRouter
   done yangapi
 
 module.exports = yangapi

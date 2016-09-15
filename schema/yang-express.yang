@@ -1,0 +1,135 @@
+module yang-express {
+  namespace "urn:ietf:params:xml:ns:yang:yang-express";
+  prefix yex;
+  yang-version 1.1;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import yang-meta-types {
+    prefix meta;
+  }
+  import ietf-yang-library {
+    prefix yanglib;
+  }
+
+  organization
+    "Corenova Technologies, Inc.";
+  contact
+    "Peter K. Lee <peter@corenova.com>";
+  
+  description
+    "This module provides YANG model-driven middleware routing";
+
+  revision 2016-09-14 {
+    description
+      "Initial revision.";
+  }
+  
+  /*
+   * Features
+   */
+  feature express {
+    description "Express.js web server framework";
+  }
+  feature restjson {
+    if-feature express;
+    description "YANG model-driven REST/JSON middleware router";
+  }
+  feature openapi {
+    if-feature restjson;
+    description "YANG model-driven openapi/swagger 2.0 spec generator";
+  }
+  feature websocket {
+    if-feature express;
+    description "YANG model-driven socket.io middleware router";
+  }
+  /*
+   * Identities
+   */
+  identity router;
+  identity restjson  { base router; }
+  identity openapi   { base router; }
+  identity websocket { base router; }
+  /*
+   * Type Definitions
+   */
+  typedef route-handler {
+    type union {
+      type identityref { base router; }
+      type instance-identifier;
+    }
+  }
+  /*
+   * Groupings
+   */
+  grouping api-info {
+    description
+      "Contains metadata information to describe this yang-express server
+       instance";
+    
+    leaf title       { type meta:title; mandatory true; }
+    leaf description { type meta:description; }
+    leaf version     { type meta:api-version; mandatory true; }
+    container contact {
+      leaf name { type meta:person-name; }
+      leaf url { type inet:uri; }
+      leaf email { type meta:email-address; }
+    }
+    container license {
+      leaf name { type meta:license; mandatory true; }
+      leaf url  { type inet:uri; }
+    }
+  }
+  grouping routers-list {
+    grouping yang-router {
+      leaf name {
+        type leafref { path '/yanglib:modules-state/module/name'; }
+        mandatory true;
+      }
+      list route {
+        key "path handler";
+        min-elements 1;
+        leaf path {
+          type inet:uri;
+          default '/';
+        }
+        leaf handler {
+          type route-handler;
+          mandatory true;
+        }
+        status planned;
+      }
+    }
+    list router {
+      key 'name';
+      uses yang-router;
+    }
+  }
+  /*
+   * Configuration data nodes
+   */
+  container server {
+    container info {
+      uses api-info;
+    }
+    leaf port {
+      type uint16;
+      default 5050;
+    }
+    leaf hostname {
+      type string;
+    }
+    uses routers-list;
+  }
+  /*
+   * Remote Procedure Calls
+   */
+  rpc run {
+    input {
+      leaf port { type uint16; }
+      leaf hostname { type string; }
+    }
+  }
+  
+}

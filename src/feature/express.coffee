@@ -8,6 +8,7 @@
 # It utilizes the [express](http://expressjs.com) web server framework
 # to dynamically instanticate the web server and makes itself available
 # for higher-order features to utilize it for associating additional routing endpoints.
+#debug   = require('debug')('yang:express')
 express = require 'express'
 
 module.exports = (app=express()) ->

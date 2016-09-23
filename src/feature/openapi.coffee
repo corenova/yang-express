@@ -56,11 +56,10 @@ discoverPaths = (schema) ->
   ), {}
 
 module.exports = ->
-  feature = this
-  restjson = @use('restjson')
+  restjson = @require 'restjson'
   restjson.route '/openapi.spec'
-  .all (req, res, next) ->
-    if feature.enabled then next()
+  .all (req, res, next) =>
+    if @enabled('openapi') then next()
     else next 'route'
   .get (req, res, next) =>
     models = @get('/server/router/name').map (router) => @access router

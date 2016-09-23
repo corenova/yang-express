@@ -1,11 +1,10 @@
 # RESTJSON YANG model-driven middleware router feature
 
 module.exports = ->
-  feature = this
-  express = @use('express')
+  express = @require 'express'
   express.set 'json spaces', 2
   express.use (req, res, next) =>
-    return next 'route' if req.path is '/'
+    return next 'route' if @disabled 'restjson' or req.path is '/'
     for router in @get('/server/router/name') when @access(router).in(req.path)?
       req.model = @access router
       break
@@ -20,7 +19,7 @@ module.exports = ->
 
     @route '*'
     .all (req, res, next) ->
-      if feature.enabled and req.model? and req.accepts('json')
+      if req.model? and req.accepts('json')
         console.log "[restjson:#{req.model.name}] calling #{req.method} on #{req.path}"
         req.prop = req.model.in req.path
         next()
@@ -66,3 +65,4 @@ module.exports = ->
           return a
         ), {}
       res.send info
+    return this

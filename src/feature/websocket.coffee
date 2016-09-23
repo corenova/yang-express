@@ -1,9 +1,8 @@
 # socket.io (websockets) feature
 
 socketio = require 'socket.io'
-module.exports = -> @async (resolve, reject) ->
-  feature = this
-  express = @use('express')
+module.exports = -> @async ->
+  express = @require 'express'
   express.once 'listening', (server) =>
     console.info "[websocket] binding to server"
     io = socketio server
@@ -36,12 +35,12 @@ module.exports = -> @async (resolve, reject) ->
         io.to(@name).emit 'sync', data: prop.path
 
     # attach update listener when new router is added
-    @model.on 'create', '/server/router', (prop) =>
+    @on 'create', '/server/router', (prop) =>
       @access(prop.name).on 'update', (prop) ->
         io.to(@name).emit 'sync', data: prop.path
 
     # disconnect room when router is removed
-    @model.on 'delete', '/server/router', (prop) ->
+    @on 'delete', '/server/router', (prop) ->
       io.to(prop.name).emit 'disconnect'
 
-    resolve io
+    next io

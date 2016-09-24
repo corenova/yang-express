@@ -5,7 +5,15 @@ petstore.on 'update', '/pet', (prop) ->
   console.log "[@name] update for #{prop.path}"  
 
 express = module.exports = require('..').eval require('./petstore.json')
-express.enable 'openapi'
+express
+  .enable 'restjson'
+  .enable 'openapi'
 
 # only start if directly invoked
-express.invoke 'run' if require.main is module
+if require.main is module
+  express.invoke('run')
+  .then  (res) ->
+    console.info "petstore-express running with:"
+    console.info res
+  .catch (err) -> console.error err
+    

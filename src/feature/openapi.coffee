@@ -1,6 +1,7 @@
 # OPENAPI (swagger) specification feature
 
-yaml = require 'js-yaml'
+express = require 'express'
+yaml    = require 'js-yaml'
 
 # TODO: do something with this info...
 mimes = [ 'openapi+yaml', 'openapi+json', 'yaml', 'json' ]
@@ -56,43 +57,54 @@ discoverPaths = (schema) ->
   ), {}
 
 module.exports = ->
-  restjson = @require 'restjson'
-  restjson.route '/openapi.spec'
-  .all (req, res, next) =>
-    if @enabled('openapi') then next()
-    else next 'route'
-  .get (req, res, next) =>
-    models = @get('/server/router/name').map (router) => @access router
-    spec =
-      swagger: '2.0'
-      info: @get('/server/info')
-      host: "#{@get('/server/hostname')}:#{@get('/server/port')}"
-      consumes: [ "application/json" ]
-      produces: [ "application/json" ]
-      paths: models.reduce ((a, model) ->
-        a[k] = v for k, v of discoverPaths(model.schema)
-        return a
-      ), {}
-      definitions: models.reduce ((a, model) ->
-        getdefs = (schema) ->
-          match = schema.nodes.filter (x) -> x.kind in [ 'list', 'container' ]
-          match.reduce ((a,b) -> a.concat (getdefs b)... ), match
-        for def in getdefs(model.schema)
-          o = 
-            required: []
-            properties: {}
-          for prop in def.nodes
-            if prop.mandatory?.tag is true
-              o.required.push prop.tag
-            # TODO: need to traverse to the most primitive type
-            o.properties[prop.tag] = type: prop.type?.tag ? 'string'
-          a[def.tag] = o
-          if def.kind is 'list'
-            a["#{def.tag}s"] =
-              type: 'array'
-              items: '$ref': "#/definitions/#{def.tag}"
-        return a
-      ), {}
-    res.format
-      json: -> res.send spec
-      yaml: -> res.send (yaml.dump spec)
+  ctx = this
+  @content ?= (->
+    @route '/openapi.spec'
+    .all (req, res, next) ->
+      return next 'route' unless req.app.enabled('openapi') and req.app.enabled('restjson')
+      next()
+    .get (req, res, next) ->
+      routers = ctx.get('/server/router/name')
+      routers = [ routers ] unless Array.isArray routers
+      models = routers.map (router) -> ctx.access router
+      spec =
+        swagger: '2.0'
+        info: ctx.get('/server/info')
+        host: "#{ctx.get('/server/hostname')}:#{ctx.get('/server/port')}"
+        consumes: [ "application/json" ]
+        produces: [ "application/json" ]
+        paths: models.reduce ((a, model) ->
+          a[k] = v for k, v of discoverPaths(model.schema)
+          return a
+        ), {}
+        definitions: models.reduce ((a, model) ->
+          getdefs = (schema) ->
+            match = schema.nodes.filter (x) -> x.kind in [ 'list', 'container' ]
+            match.reduce ((a,b) -> a.concat (getdefs b)... ), match
+          for def in getdefs(model.schema)
+            o = 
+              required: []
+              properties: {}
+            for prop in def.nodes
+              if prop.mandatory?.tag is true
+                o.required.push prop.tag
+              # TODO: need to traverse to the most primitive type
+              o.properties[prop.tag] = type: prop.type?.tag ? 'string'
+            a[def.tag] = o
+            if def.kind is 'list'
+              a["#{def.tag}s"] =
+                type: 'array'
+                items: '$ref': "#/definitions/#{def.tag}"
+          return a
+        ), {}
+      res.format
+        json: -> res.send spec
+        yaml: -> res.send (yaml.dump spec)
+    return this
+  ).call express.Router()
+
+  @engine.once "enable:openapi", (openapi) ->
+    app = @express
+    app.set 'json spaces', 2
+    app.enable 'openapi'
+    app.use openapi

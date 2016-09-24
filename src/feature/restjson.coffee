@@ -1,18 +1,22 @@
-# RESTJSON YANG model-driven middleware router feature
+# RESTJSON YANG model-driven middleware router feature binding
+
+debug = require('debug')('yang-express:restjson')
+express = require 'express'
+bp = require 'body-parser'
 
 module.exports = ->
-  express = @require 'express'
-  express.set 'json spaces', 2
-  express.use (req, res, next) =>
-    return next 'route' if @disabled 'restjson' or req.path is '/'
-    for router in @get('/server/router/name') when @access(router).in(req.path)?
-      req.model = @access router
-      break
-    next()
-  express.mount ->
-    bp = require 'body-parser'
+  ctx = this
+  @content ?= (->
     @use bp.urlencoded(extended:true), bp.json(strict:true, type:'*/json')
-
+    @use (req, res, next) ->
+      return next 'route' if req.app.disabled 'restjson' or req.path is '/'
+      routers = ctx.get('/server/router/name')
+      routers = [ routers ] unless Array.isArray routers
+      for router in routers when ctx.access(router).in(req.path)?
+        debug "found '#{router}' for #{req.path}"
+        req.model = ctx.access router
+        break
+      next()
     transact = (target, callback=->this) -> switch
       when Array.isArray target then target.map (x) -> callback.call(x).valueOf()
       else callback.call(target).valueOf()
@@ -20,7 +24,7 @@ module.exports = ->
     @route '*'
     .all (req, res, next) ->
       if req.model? and req.accepts('json')
-        console.log "[restjson:#{req.model.name}] calling #{req.method} on #{req.path}"
+        debug "[#{req.model.name}] calling #{req.method} on #{req.path}"
         req.prop = req.model.in req.path
         next()
       else next 'route'
@@ -65,4 +69,17 @@ module.exports = ->
           return a
         ), {}
       res.send info
+
+    # setup default error handler
+    @use (err, req, res, next) ->
+      console.error err.stack
+      res.status(500).send(error: message: err.message)
+      
     return this
+  ).call express.Router()
+
+  @engine.once "enable:restjson", (restjson) ->
+    app = @express
+    app.set 'json spaces', 2
+    app.enable 'restjson'
+    app.use restjson

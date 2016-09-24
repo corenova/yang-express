@@ -30,7 +30,16 @@ module yang-express {
    * Features
    */
   feature express {
-    description "Express.js web server framework";
+    description
+      "Express.js web server framework capability.
+
+       This feature component is the primary instance powering
+       additional features provided by the yang-express module.
+
+       It utilizes the Express.js web server framework to dynamically
+       instanticate the web server and makes itself available for
+       remote management.";
+    reference "http://expressjs.com";
   }
   feature restjson {
     if-feature express;

@@ -1,19 +1,22 @@
 require 'yang-js'
 
-petstore = require('./petstore.yang').eval require('./petstore.json')
+data = require('./petstore.json')
+petstore = require('./petstore.yang').eval(data)
 petstore.on 'update', '/pet', (prop) ->
   console.log "[@name] update for #{prop.path}"  
 
-express = module.exports = require('..').eval require('./petstore.json')
+express = require('..').eval(data)
 express
   .enable 'restjson'
   .enable 'openapi'
 
+module.exports = express
+
 # only start if directly invoked
 if require.main is module
+  yaml = require 'js-yaml'
   express.invoke('run')
-  .then  (res) ->
+  .then (res) ->
     console.info "petstore-express running with:"
-    console.info res
+    console.info yaml.dump(res)
   .catch (err) -> console.error err
-    

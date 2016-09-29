@@ -49,15 +49,19 @@ Create a new [Express](http://expressjs.com) app:
 
 ```coffeescript
 require 'yang-js'
-petstore = require('./example/petstore.yang').eval require('./example/petstore.json')
-app = require('yang-express').eval {
+
+data = require('./example/petstore.json')
+petstore = require('./example/petstore.yang').eval(data)
+express = require('yang-express').eval {
   'yang-express:server':
     router: [
 	  { name: 'petstore' }
 	]
 }
-app.enable 'restjson'
-app.invoke 'run', port: 5000
+express.enable 'restjson'
+express.in('run').invoke port: 5000
+  .then  (res) -> console.log "running"
+  .catch (err) -> console.error err
 ```
 
 The above example *mimics* the PetStore example found inside the
@@ -95,7 +99,7 @@ $ npm run example:petstore
 Alternative API endpoints can be fully-qualified `/petstore:pet/...`
 as well as prefix-qualified `/ps:pet/...`. This is the suggested
 convention when using multiple models that may have namespace
-conflict.
+conflict (if mounted together at '/').
 
 **Note**: Bulk operation on all matching attributes can be used to set a new
 value for every matching attribute in the collection. 
@@ -104,42 +108,21 @@ value for every matching attribute in the collection.
 
 name | description
 --- | ---
-[restjson](./src/restjson.litcoffee)   | REST/JSON API
-[websocket](./src/websocket.litcoffee) | [socket.io](http://socket.io)
-[openapi](./src/openapi.litcoffee)     | OpenAPI/Swagger 2.0 spec
-[yangapi](./src/yangapi.litcoffee)     | YANG module manager (*experimental*)
+[restjson](./src/feature/restjson.coffee)   | REST/JSON API
+[openapi](./src/feature/openapi.coffee)     | OpenAPI/Swagger 2.0 spec
+[websocket](./src/feature/websocket.coffee) | [socket.io](http://socket.io)
 
 ## API
 
-This module contains **all** the methods available inside
-[Express](http://expressjs.com) instance and further override/extend
-the following additional methods.
+This module is a YANG model-driven data module, which is essentially a
+composition of the [YANG Schema](./schema/yang-express.yang) and
+[Control Binding](./src/yang-exress.coffee).  It is designed to model
+middleware routing runtime configuration and can be utilized with or
+without an actual [Express](http://expressjs.com) instance.
 
-### enable (name, opts={})
-
-This call *overloads* prior `enable` method and provides ability to
-*activate* a registered/available **feature plugin** along with `opts`
-for that plugin.
-
-### disable (name)
-
-This call *overloads* prior `disable` method and provides ability to
-*deactivate* a currently *active* **feature plugin** instance.
-
-### open (name, callback)
-
-This new facility provides the primary mechanism to initialize a new
-[Yang.Store](http://github.com/corenova/yang-js) instance inside the
-[Express](http://expressjs.com) runtime and associate various YANG
-model instances to be served by the `Store`.
-
-It currently supports opening *multiple* stores internally but in most
-scenarios, only one `Store` instance should be sufficient.
-
-The `callback` if provided will be called with the `Store` instance as
-the `this` context and is a convenience pattern for grouping all
-`Store` related operations before it is *registered* within the
-express application instance.
+For information on operations available on this module, please refer
+to [yang-js Model API](http://github.com/corenova/yang-js#model-instance)
+documentation.
 
 ## Tests
 

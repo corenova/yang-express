@@ -65,19 +65,21 @@ module.exports = ->
       next()
     .get (req, res, next) ->
       routers = ctx.get('/server/router/name')
+      return next 'route' unless routers?
       routers = [ routers ] unless Array.isArray routers
       models = routers.map (router) -> ctx.access router
-      spec =
-        swagger: '2.0'
+      
+      #ctx.access('yang-openapi').in('transform').invoke
+      spec = 
         info: ctx.get('/server/info')
         host: "#{ctx.get('/server/hostname')}:#{ctx.get('/server/port')}"
         consumes: [ "application/json" ]
         produces: [ "application/json" ]
-        paths: models.reduce ((a, model) ->
+        path: models.reduce ((a, model) ->
           a[k] = v for k, v of discoverPaths(model.schema)
           return a
         ), {}
-        definitions: models.reduce ((a, model) ->
+        definition: models.reduce ((a, model) ->
           getdefs = (schema) ->
             match = schema.nodes.filter (x) -> x.kind in [ 'list', 'container' ]
             match.reduce ((a,b) -> a.concat (getdefs b)... ), match

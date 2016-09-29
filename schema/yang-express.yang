@@ -1,17 +1,11 @@
 module yang-express {
   namespace "urn:ietf:params:xml:ns:yang:yang-express";
-  prefix yex;
+  prefix express;
   yang-version 1.1;
 
-  import ietf-inet-types {
-    prefix inet;
-  }
-  import yang-meta-types {
-    prefix meta;
-  }
-  import ietf-yang-library {
-    prefix yanglib;
-  }
+  import ietf-inet-types { prefix inet; }
+  import ietf-yang-library { prefix yanglib; }
+  import yang-openapi { prefix openapi; }
 
   organization
     "Corenova Technologies, Inc.";
@@ -72,24 +66,6 @@ module yang-express {
   /*
    * Groupings
    */
-  grouping api-info {
-    description
-      "Contains metadata information to describe this yang-express server
-       instance";
-    
-    leaf title       { type meta:title; mandatory true; }
-    leaf description { type meta:description; }
-    leaf version     { type meta:api-version; mandatory true; }
-    container contact {
-      leaf name { type meta:person-name; }
-      leaf url { type inet:uri; }
-      leaf email { type meta:email-address; }
-    }
-    container license {
-      leaf name { type meta:license; mandatory true; }
-      leaf url  { type inet:uri; }
-    }
-  }
   grouping routers-list {
     grouping yang-router {
       leaf name {
@@ -115,16 +91,13 @@ module yang-express {
       uses yang-router;
     }
   }
-  /*
-   * Configuration data nodes
-   */
-  container server {
+  grouping express-server {
     container info {
-      uses api-info;
+      uses openapi:info;
     }
     leaf port {
       type uint16;
-      default 5050;
+      default 5000;
     }
     leaf hostname {
       type string;
@@ -132,14 +105,26 @@ module yang-express {
     uses routers-list;
   }
   /*
+   * Configuration data nodes
+   */
+  container server {
+    uses express-server;
+  }
+  /*
    * Remote Procedure Calls
    */
   rpc run {
     if-feature express;
     input {
-      leaf port { type uint16; }
-      leaf hostname { type string; }
+      leaf port {
+        type uint16;
+      }
+      leaf hostname {
+        type string;
+      }
+    }
+    output {
+      uses express-server;
     }
   }
-  
 }

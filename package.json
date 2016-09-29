@@ -24,7 +24,8 @@
     "ietf-inet-types": "yang-js",
     "ietf-yang-library": "yang-js",
     "yang-meta-types": "yang-js",
-    "yang-express": "./lib/yang-express.js"
+    "yang-express": "./lib/yang-express.js",
+    "yang-openapi": "./schema/yang-openapi.yang"
   },
   "dependencies": {
     "body-parser": "^1.15.2",
@@ -32,7 +33,7 @@
     "express": "^4.14.0",
     "js-yaml": "^3.6.1",
     "socket.io": "^1.4.8",
-    "yang-js": "^0.16.0"
+    "yang-js": "^0.16.1"
   },
   "devDependencies": {
     "coffee-script": ">=1.7.0",

@@ -14,18 +14,8 @@ express = require 'express'
 
 module.exports = require('../schema/yang-express.yang').bind {
 
-  # to use existing instance of express, you can model.enable 'express', <existing app>
-  '[express]': ->
-    @content ?= (->
-      # overload existing listen() should consider alternative options
-      @listen = ((app, args...) ->
-        server = @apply app, args
-        server.on 'listening', -> app.emit 'listening', server
-        return server
-      ).bind @listen, this
-      return this
-    ).call express()
-
+  # to use existing instance of express, you can .bind with an existing app
+  '[express]': -> @content ?= express()
   '[restjson]':  require('./feature/restjson')
   '[openapi]':   require('./feature/openapi')
   '[websocket]': require('./feature/websocket')
@@ -38,7 +28,8 @@ module.exports = require('../schema/yang-express.yang').bind {
     server.port = @input.port
     server.hostname = @input.hostname
     @output = new Promise (resolve, reject) ->
-      app.listen server.port
-      app.on 'listening', -> resolve server
-        
+      http = app.listen server.port
+      http.on 'listening', ->
+        app.emit 'listening', http
+        resolve server
 }

@@ -1,5 +1,6 @@
 module petstore {
   prefix ps;
+  namespace "urn:ietf:params:xml:ns:yang:example-petstore";
   description "Yang Petstore";
   grouping Pet {
     leaf id   { type uint64; mandatory true; }

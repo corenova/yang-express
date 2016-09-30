@@ -19,11 +19,7 @@ $ npm install yang-express
 
 * Robust model-driven routing
 * Hotplug runtime models
-* Dynamic interface generators
-  * [restjson](./src/restjson.coffee)
-  * [websocket](./src/websocket.coffee)
-  * [openapi/swagger](./src/openapi.coffee)
-  * [yangapi](./src/yangapi.coffee)
+* [Dynamic interface generators](#dynamic-interface-generators)
 * Hierarchical (deeply nested) data tree
 * Adaptive validations
 * Flexibe RPCs and notifications
@@ -34,39 +30,38 @@ This module also *inherits* all the features from
 
 ## Quick Start
 
+Create a YANG schema [petstore.yang](./example/petstore.yang):
+
+```
+module petstore {
+  prefix ps;
+  description "Yang Petstore";
+  grouping Pet {
+	leaf id   { type uint64; mandatory true; }
+	leaf name { type string; mandatory true; }
+	leaf tag  { type string; }
+  }
+  list pet { key "id"; uses Pet; }
+}
+```
+
+Create a new [Express](http://expressjs.com) app:
+
 ```coffeescript
-schema = """
-  module petstore {
-    prefix ps;
-    description "Yang Petstore";
-    grouping Pet {
-      leaf id   { type uint64; mandatory true; }
-      leaf name { type string; mandatory true; }
-      leaf tag  { type string; }
-    }
-    list pet { key "id"; uses Pet; }
-  }
-"""
-app = require 'yang-express' ->
-  @enable 'openapi', {
-    title: 'Yang Petstore'
-	description: 'Example'
-	version: '0.1'
-	contact: {
-	  name: 'John Doe'
-	  url: 'http://github.com/corenova/yang-express'
-    }
-	license: {
-	  name: 'Apache-2.0'
-	}
-  }
-  @enable 'yangapi'
-  @enable 'restjson'
-  @enable 'websocket'
-  @open 'petstore', ->
-    @import schema
-	@on 'update', (prop, prev) -> console.log "#{prop.path} triggered update"
-app.listen 5000
+require 'yang-js'
+
+data = require('./example/petstore.json')
+petstore = require('./example/petstore.yang').eval(data)
+express = require('yang-express').eval {
+  'yang-express:server':
+    router: [
+	  { name: 'petstore' }
+	]
+}
+express.enable 'restjson'
+express.in('run').invoke port: 5000
+  .then  (res) -> console.log "running"
+  .catch (err) -> console.error err
 ```
 
 The above example *mimics* the PetStore example found inside the
@@ -74,66 +69,60 @@ The above example *mimics* the PetStore example found inside the
 project.
 
 When the `yang-express` app runs, it will auto-generate the data model
-using the `schema` and dynamically route the following endpoints:
+using the [petstore.yang](./example/petstore.yang) schema and
+dynamically route the following endpoints utilizing the
+[restjson](./src/restjson.litcoffee) dynamic interface generator:
 
-endpoint        | methods          | feature   | description
----             | ---              | ---       | ---
-/openapi.spec   | GET              | openapi   | openapi/swagger 2.0 specification (JSON or YAML)
-/petstore.yang  | **RUMDO** + POST | yangapi   | manage YANG schema link
-/socket.io      |                  | websocket | socket.io interface
-/pet            | **RUMDO** + POST | restjson  | operate on the pet collection
-/pet/:id        | **RUMDO**        | restjson  | operate on a specific pet
-/pet/:id/:leaf  | **RUMDO**        | restjson  | operate on a pet's attribute
-/pet/:leaf      | **RUMDO**        | restjson  | bulk operate attributes*
-
-*RUMDO*: READ (GET), UPDATE (PUT), MODIFY (PATCH), DELETE, OPTIONS
-
-Bulk operation on all matching attributes can be used to set a new
-value for every matching attribute in the collection. 
-
-Alternative API endpoints can be fully-qualified `/petstore:pet/...`
-as well as prefix-qualified `/ps:pet/...`. This is the suggested
-convention when using multiple models that may have namespace
-conflict.
+endpoint        | methods    | description
+---             | ---        | ---
+/pet            | **CRUMDO** | operate on the pet collection
+/pet/:id        | **RUMDO**  | operate on a specific pet
+/pet/:id/:leaf  | **RUMDO**  | operate on a pet's attribute
+/pet/:leaf      | **RUMDO**  | bulk operate attributes*
 
 You can try this example implementation located inside the
-[example/](./example) folder:
+[example/](./example) folder via:
 
 ```bash
 $ npm run example:petstore
 ```
 
+### CRUMDO
+
+- C: CREATE (POST)
+- R: READ (GET)
+- U: UPDATE (PUT)
+- M: MODIFY (PATCH)
+- D: DELETE
+- O: OPTIONS
+
+Alternative API endpoints can be fully-qualified `/petstore:pet/...`
+as well as prefix-qualified `/ps:pet/...`. This is the suggested
+convention when using multiple models that may have namespace
+conflict (if mounted together at '/').
+
+**Note**: Bulk operation on all matching attributes can be used to set a new
+value for every matching attribute in the collection. 
+
+## Dynamic Interface Generators
+
+name | description
+--- | ---
+[restjson](./src/feature/restjson.coffee)   | REST/JSON API
+[openapi](./src/feature/openapi.coffee)     | OpenAPI/Swagger 2.0 spec
+[websocket](./src/feature/websocket.coffee) | [socket.io](http://socket.io)
+
 ## API
 
-This module contains **all** the methods available inside
-[Express](http://expressjs.com) instance and further override/extend
-the following additional methods.
+This module is a YANG model-driven data module, which is essentially a
+composition of the [YANG Schema](./schema/yang-express.yang) and
+[Control Binding](./src/yang-exress.coffee).  It is designed to model
+middleware routing runtime configuration and can be utilized with or
+without an actual [Express](http://expressjs.com) instance.
 
-### enable (name, opts={})
-
-This call *overloads* prior `enable` method and provides ability to
-*activate* a registered/available **feature plugin** along with `opts`
-for that plugin.
-
-### disable (name)
-
-This call *overloads* prior `disable` method and provides ability to
-*deactivate* a currently *active* **feature plugin** instance.
-
-### open (name, callback)
-
-This new facility provides the primary mechanism to initialize a new
-[Yang.Store](http://github.com/corenova/yang-js) instance inside the
-[Express](http://expressjs.com) runtime and associate various YANG
-model instances to be served by the `Store`.
-
-It currently supports opening *multiple* stores internally but in most
-scenarios, only one `Store` instance should be sufficient.
-
-The `callback` if provided will be called with the `Store` instance as
-the `this` context and is a convenience pattern for grouping all
-`Store` related operations before it is *registered* within the
-express application instance.
+For information on operations available on this module, please refer
+to [yang-js Model API](http://github.com/corenova/yang-js#model-instance)
+documentation.
 
 ## Tests
 

@@ -1,6 +1,6 @@
 # RESTJSON YANG model-driven middleware router feature binding
 
-debug = require('debug')('yang-express:restjson')
+debug = require('debug')('yang:express') if process.env.DEBUG?
 express = require 'express'
 bp = require 'body-parser'
 
@@ -13,7 +13,7 @@ module.exports = ->
       routers = ctx.get('/server/router/name')
       routers = [ routers ] unless Array.isArray routers
       for router in routers when ctx.access(router).in(req.path)?
-        debug "found '#{router}' for #{req.path}"
+        debug? "[restjson] found '#{router}' for #{req.path}"
         req.model = ctx.access router
         break
       next()
@@ -25,7 +25,7 @@ module.exports = ->
     @route '*'
     .all (req, res, next) ->
       if req.model? and req.accepts('json')
-        debug "[#{req.model.name}] calling #{req.method} on #{req.path}"
+        debug? "[restjson] calling #{req.method} on #{req.path}"
         req.prop = req.model.in(req.path)
         next()
       else next 'route'

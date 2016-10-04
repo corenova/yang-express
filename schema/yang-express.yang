@@ -5,6 +5,7 @@ module yang-express {
 
   import ietf-inet-types { prefix inet; }
   import ietf-yang-library { prefix yanglib; }
+  import yang-meta-types { prefix meta; }
   import yang-openapi { prefix openapi; }
 
   organization
@@ -122,6 +123,10 @@ module yang-express {
       leaf hostname {
         type string;
       }
+      leaf-list include {
+        type meta:meta-identifier;
+      }
+      container config;
     }
     output {
       uses express-server;

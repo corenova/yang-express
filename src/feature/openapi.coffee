@@ -1,5 +1,6 @@
 # OPENAPI (swagger) specification feature
 
+debug = require('debug')('yang:express') if process.env.DEBUG?
 express = require 'express'
 yaml    = require 'js-yaml'
 
@@ -68,6 +69,35 @@ module.exports = ->
       return next 'route' unless routers?
       routers = [ routers ] unless Array.isArray routers
       models = routers.map (router) -> ctx.access router
+      paths = models.reduce ((a, model) ->
+        a[k] = v for k, v of discoverPaths(model.schema)
+        return a
+      ), {}
+      definitions = models.reduce ((a, model) ->
+        getdefs = (schema) ->
+          match = schema.nodes.filter (x) -> x.kind in [ 'list', 'container' ]
+          match.reduce ((a,b) -> a.concat (getdefs b)... ), match
+        for def in getdefs(model.schema)
+          o = 
+            required: []
+            properties: {}
+          for prop in def.nodes
+            if prop.mandatory?.tag is true
+              o.required.push prop.tag
+            # TODO: need to traverse to the most primitive type
+            o.properties[prop.tag] = type: prop.type?.tag ? 'string'
+          a[def.tag] = o
+          if def.kind is 'list'
+            a["#{def.tag}s"] =
+              type: 'array'
+              items: '$ref': "#/definitions/#{def.tag}"
+        return a
+      ), {}
+
+      debug? "[openapi] discovered " +
+        "#{Object.keys(paths).length} paths and " +
+        "#{Object.keys(definitions).length} definitions " +
+        "in #{models.length} models"
       
       #ctx.access('yang-openapi').in('transform').invoke
       spec = 
@@ -75,30 +105,8 @@ module.exports = ->
         host: "#{ctx.get('/server/hostname')}:#{ctx.get('/server/port')}"
         consumes: [ "application/json" ]
         produces: [ "application/json" ]
-        path: models.reduce ((a, model) ->
-          a[k] = v for k, v of discoverPaths(model.schema)
-          return a
-        ), {}
-        definition: models.reduce ((a, model) ->
-          getdefs = (schema) ->
-            match = schema.nodes.filter (x) -> x.kind in [ 'list', 'container' ]
-            match.reduce ((a,b) -> a.concat (getdefs b)... ), match
-          for def in getdefs(model.schema)
-            o = 
-              required: []
-              properties: {}
-            for prop in def.nodes
-              if prop.mandatory?.tag is true
-                o.required.push prop.tag
-              # TODO: need to traverse to the most primitive type
-              o.properties[prop.tag] = type: prop.type?.tag ? 'string'
-            a[def.tag] = o
-            if def.kind is 'list'
-              a["#{def.tag}s"] =
-                type: 'array'
-                items: '$ref': "#/definitions/#{def.tag}"
-          return a
-        ), {}
+        path: paths
+        definition: definitions
       res.format
         json: -> res.send spec
         yaml: -> res.send (yaml.dump spec)

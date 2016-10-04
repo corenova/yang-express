@@ -10,6 +10,7 @@
 # additional routing endpoints.
  
 require 'yang-js'
+debug = require('debug')('yang:express') if process.env.DEBUG?
 express = require 'express'
 
 module.exports = require('../schema/yang-express.yang').bind {
@@ -27,6 +28,14 @@ module.exports = require('../schema/yang-express.yang').bind {
     server = @get('/server')
     server.port = @input.port
     server.hostname = @input.hostname
+    includes = [].concat(@input.include).filter(Boolean)
+    for include in includes
+      debug? "include/route '#{include}'"
+      try @schema.constructor.import(include).eval(@input.config)
+      catch e
+        console.error e
+        throw new Error "unable to include '#{include}' YANG module, check your local 'package.json' for models"
+      @in('/server/router').merge name: include
     @output = new Promise (resolve, reject) ->
       http = app.listen server.port
       http.on 'listening', ->

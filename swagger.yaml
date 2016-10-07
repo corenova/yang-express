@@ -1,139 +1,684 @@
-swagger: "2.0"
+swagger: '2.0'
 info:
-  version: 1.0.0
-  title: yang-express
-  description: A sample API that uses a petstore as an example to demonstrate features in the swagger-2.0 specification
-  termsOfService: http://swagger.io/terms/
+  title: YANG-EXPRESS
+  description: |
+    Provides YANG model-driven middleware routing based on Express.js
+    web framework.
+
+    Minimalistic web framework leveraging powerful YANG schema expressions
+    according to [RFC 6020](http://tools.ietf.org/html/rfc6020). Generates
+    dynamic model-driven interfaces with flexible plugin system.
+
+    This output was generated using
+    [yang-swagger](http://github.com/corenova/yang-swagger).
+  version: '1.0'
   contact:
-    name: Swagger API Team
-    email: foo@example.com
-    url: http://madskristensen.net
+    name: Peter K. Lee
+    url: 'https://github.com/corenova/yang-express'
+    email: peter@corenova.com
   license:
-    name: MIT
-    url: http://github.com/gruntjs/grunt/blob/master/LICENSE-MIT
-host: petstore.swagger.io
-basePath: /api
-schemes:
-  - http
+    name: Apache-2.0
 consumes:
   - application/json
 produces:
   - application/json
 paths:
-  /pets:
+  '/yang-express:server':
     get:
-      description: |
-        Returns all pets from the system that the user has access to
-        Nam sed condimentum est. Maecenas tempor sagittis sapien, nec rhoncus sem sagittis sit amet. Aenean at gravida augue, ac iaculis sem. Curabitur odio lorem, ornare eget elementum nec, cursus id lectus. Duis mi turpis, pulvinar ac eros ac, tincidunt varius justo. In hac habitasse platea dictumst. Integer at adipiscing ante, a sagittis ligula. Aenean pharetra tempor ante molestie imperdiet. Vivamus id aliquam diam. Cras quis velit non tortor eleifend sagittis. Praesent at enim pharetra urna volutpat venenatis eget eget mauris. In eleifend fermentum facilisis. Praesent enim enim, gravida ac sodales sed, placerat id erat. Suspendisse lacus dolor, consectetur non augue vel, vehicula interdum libero. Morbi euismod sagittis libero sed lacinia.
-        Sed tempus felis lobortis leo pulvinar rutrum. Nam mattis velit nisl, eu condimentum ligula luctus nec. Phasellus semper velit eget aliquet faucibus. In a mattis elit. Phasellus vel urna viverra, condimentum lorem id, rhoncus nibh. Ut pellentesque posuere elementum. Sed a varius odio. Morbi rhoncus ligula libero, vel eleifend nunc tristique vitae. Fusce et sem dui. Aenean nec scelerisque tortor. Fusce malesuada accumsan magna vel tempus. Quisque mollis felis eu dolor tristique, sit amet auctor felis gravida. Sed libero lorem, molestie sed nisl in, accumsan tempor nisi. Fusce sollicitudin massa ut lacinia mattis. Sed vel eleifend lorem. Pellentesque vitae felis pretium, pulvinar elit eu, euismod sapien.
-      operationId: findPets
-      parameters:
-        - name: tags
-          in: query
-          description: tags to filter by
-          required: false
-          type: array
-          collectionFormat: csv
-          items:
-            type: string
-        - name: limit
-          in: query
-          description: maximum number of results to return
-          required: false
-          type: integer
-          format: int32
+      summary: View detail on server
+      deprecated: false
       responses:
-        200:
-          description: pet response
+        '200':
+          description: Expected response of server
+          schema:
+            $ref: '#/definitions/express:express-server'
+    put:
+      summary: Update details on server
+      deprecated: false
+      parameters:
+        - name: server
+          in: body
+          schema:
+            $ref: '#/definitions/express:express-server'
+          required: false
+      responses:
+        '200':
+          description: Expected response of server
+          schema:
+            $ref: '#/definitions/express:express-server'
+    patch:
+      summary: Merge details on server
+      deprecated: false
+      parameters:
+        - name: server
+          in: body
+          schema:
+            $ref: '#/definitions/express:express-server'
+          required: false
+      responses:
+        '200':
+          description: Expected response of server
+          schema:
+            $ref: '#/definitions/express:express-server'
+    delete:
+      summary: Delete server from yang-express
+      deprecated: false
+      responses:
+        '204':
+          description: Expected response for delete
+  '/yang-express:server/router':
+    post:
+      summary: Creates one or more new router in express-server
+      deprecated: false
+      parameters:
+        - name: router
+          in: body
           schema:
             type: array
             items:
-              $ref: '#/definitions/Pet'
-        default:
-          description: unexpected error
-          schema:
-            $ref: '#/definitions/Error'
-    post:
-      description: Creates a new pet in the store.  Duplicates are allowed
-      operationId: addPet
-      parameters:
-        - name: pet
-          in: body
-          description: Pet to add to the store
-          required: true
-          schema:
-            $ref: '#/definitions/NewPet'
+              allOf:
+                - $ref: '#/definitions/yang-router'
+                - required:
+                    - name
+                  properties:
+                    name:
+                      type: string
+                      format: leafref
+                    route:
+                      type: array
+                      items:
+                        type: object
+                        required:
+                          - handler
+                        properties:
+                          path:
+                            default: /
+                            type: string
+                            format: 'inet:uri'
+                          handler:
+                            type: string
+                            format: route-handler
+          required: false
       responses:
-        200:
-          description: pet response
+        '200':
+          description: Expected response for creating router(s) in collection
           schema:
-            $ref: '#/definitions/Pet'
-        default:
-          description: unexpected error
-          schema:
-            $ref: '#/definitions/Error'
-  /pets/{id}:
+            type: array
+            items:
+              allOf:
+                - $ref: '#/definitions/yang-router'
+                - required:
+                    - name
+                  properties:
+                    name:
+                      type: string
+                      format: leafref
+                    route:
+                      type: array
+                      items:
+                        type: object
+                        required:
+                          - handler
+                        properties:
+                          path:
+                            default: /
+                            type: string
+                            format: 'inet:uri'
+                          handler:
+                            type: string
+                            format: route-handler
     get:
-      description: Returns a user based on a single ID, if the user does not have access to the pet
-      operationId: find pet by id
-      parameters:
-        - name: id
-          in: path
-          description: ID of pet to fetch
-          required: true
-          type: integer
-          format: int64
+      summary: List all routers from express-server
+      deprecated: false
       responses:
-        200:
-          description: pet response
+        '200':
+          description: Expected response of routers
           schema:
-            $ref: '#/definitions/Pet'
-        default:
-          description: unexpected error
+            type: array
+            items:
+              allOf:
+                - $ref: '#/definitions/yang-router'
+                - required:
+                    - name
+                  properties:
+                    name:
+                      type: string
+                      format: leafref
+                    route:
+                      type: array
+                      items:
+                        type: object
+                        required:
+                          - handler
+                        properties:
+                          path:
+                            default: /
+                            type: string
+                            format: 'inet:uri'
+                          handler:
+                            type: string
+                            format: route-handler
+    put:
+      summary: Replace the entire router collection
+      deprecated: false
+      parameters:
+        - name: router
+          in: body
           schema:
-            $ref: '#/definitions/Error'
+            type: array
+            items:
+              allOf:
+                - $ref: '#/definitions/yang-router'
+                - required:
+                    - name
+                  properties:
+                    name:
+                      type: string
+                      format: leafref
+                    route:
+                      type: array
+                      items:
+                        type: object
+                        required:
+                          - handler
+                        properties:
+                          path:
+                            default: /
+                            type: string
+                            format: 'inet:uri'
+                          handler:
+                            type: string
+                            format: route-handler
+          required: false
+      responses:
+        '201':
+          description: Expected response for replacing collection
+    patch:
+      summary: Merge items into the router collection
+      deprecated: false
+      parameters:
+        - name: router
+          in: body
+          schema:
+            type: array
+            items:
+              allOf:
+                - $ref: '#/definitions/yang-router'
+                - required:
+                    - name
+                  properties:
+                    name:
+                      type: string
+                      format: leafref
+                    route:
+                      type: array
+                      items:
+                        type: object
+                        required:
+                          - handler
+                        properties:
+                          path:
+                            default: /
+                            type: string
+                            format: 'inet:uri'
+                          handler:
+                            type: string
+                            format: route-handler
+          required: false
+      responses:
+        '201':
+          description: Expected response for merging into collection
+  '/yang-express:server/router/{name}':
+    get:
+      summary: View detail on router
+      deprecated: false
+      responses:
+        '200':
+          description: Expected response of router
+          schema:
+            allOf:
+              - $ref: '#/definitions/yang-router'
+              - required:
+                  - name
+                properties:
+                  name:
+                    type: string
+                    format: leafref
+                  route:
+                    type: array
+                    items:
+                      type: object
+                      required:
+                        - handler
+                      properties:
+                        path:
+                          default: /
+                          type: string
+                          format: 'inet:uri'
+                        handler:
+                          type: string
+                          format: route-handler
+    put:
+      summary: Update details on router
+      deprecated: false
+      parameters:
+        - name: router
+          in: body
+          schema:
+            allOf:
+              - $ref: '#/definitions/yang-router'
+              - required:
+                  - name
+                properties:
+                  name:
+                    type: string
+                    format: leafref
+                  route:
+                    type: array
+                    items:
+                      type: object
+                      required:
+                        - handler
+                      properties:
+                        path:
+                          default: /
+                          type: string
+                          format: 'inet:uri'
+                        handler:
+                          type: string
+                          format: route-handler
+          required: false
+      responses:
+        '200':
+          description: Expected response of router
+          schema:
+            allOf:
+              - $ref: '#/definitions/yang-router'
+              - required:
+                  - name
+                properties:
+                  name:
+                    type: string
+                    format: leafref
+                  route:
+                    type: array
+                    items:
+                      type: object
+                      required:
+                        - handler
+                      properties:
+                        path:
+                          default: /
+                          type: string
+                          format: 'inet:uri'
+                        handler:
+                          type: string
+                          format: route-handler
+    patch:
+      summary: Merge details on router
+      deprecated: false
+      parameters:
+        - name: router
+          in: body
+          schema:
+            allOf:
+              - $ref: '#/definitions/yang-router'
+              - required:
+                  - name
+                properties:
+                  name:
+                    type: string
+                    format: leafref
+                  route:
+                    type: array
+                    items:
+                      type: object
+                      required:
+                        - handler
+                      properties:
+                        path:
+                          default: /
+                          type: string
+                          format: 'inet:uri'
+                        handler:
+                          type: string
+                          format: route-handler
+          required: false
+      responses:
+        '200':
+          description: Expected response of router
+          schema:
+            allOf:
+              - $ref: '#/definitions/yang-router'
+              - required:
+                  - name
+                properties:
+                  name:
+                    type: string
+                    format: leafref
+                  route:
+                    type: array
+                    items:
+                      type: object
+                      required:
+                        - handler
+                      properties:
+                        path:
+                          default: /
+                          type: string
+                          format: 'inet:uri'
+                        handler:
+                          type: string
+                          format: route-handler
     delete:
-      description: deletes a single pet based on the ID supplied
-      operationId: deletePet
-      parameters:
-        - name: id
-          in: path
-          description: ID of pet to delete
-          required: true
-          type: integer
-          format: int64
+      summary: Delete router from express-server
+      deprecated: false
       responses:
-        204:
-          description: pet deleted
-        default:
-          description: unexpected error
+        '204':
+          description: Expected response for delete
+    parameters:
+      - name: name
+        in: path
+        required: true
+        description: A key uniquely identifying router item
+        type: string
+        format: leafref
+  '/yang-express:server/router/{name}/route':
+    post:
+      summary: Creates one or more new route in router
+      deprecated: false
+      parameters:
+        - name: route
+          in: body
           schema:
-            $ref: '#/definitions/Error'
+            type: array
+            items:
+              type: object
+              required:
+                - handler
+              properties:
+                path:
+                  default: /
+                  type: string
+                  format: 'inet:uri'
+                handler:
+                  type: string
+                  format: route-handler
+          required: false
+      responses:
+        '200':
+          description: Expected response for creating route(s) in collection
+          schema:
+            type: array
+            items:
+              type: object
+              required:
+                - handler
+              properties:
+                path:
+                  default: /
+                  type: string
+                  format: 'inet:uri'
+                handler:
+                  type: string
+                  format: route-handler
+    get:
+      summary: List all routes from router
+      deprecated: false
+      responses:
+        '200':
+          description: Expected response of routes
+          schema:
+            type: array
+            items:
+              type: object
+              required:
+                - handler
+              properties:
+                path:
+                  default: /
+                  type: string
+                  format: 'inet:uri'
+                handler:
+                  type: string
+                  format: route-handler
+    put:
+      summary: Replace the entire route collection
+      deprecated: false
+      parameters:
+        - name: route
+          in: body
+          schema:
+            type: array
+            items:
+              type: object
+              required:
+                - handler
+              properties:
+                path:
+                  default: /
+                  type: string
+                  format: 'inet:uri'
+                handler:
+                  type: string
+                  format: route-handler
+          required: false
+      responses:
+        '201':
+          description: Expected response for replacing collection
+    patch:
+      summary: Merge items into the route collection
+      deprecated: false
+      parameters:
+        - name: route
+          in: body
+          schema:
+            type: array
+            items:
+              type: object
+              required:
+                - handler
+              properties:
+                path:
+                  default: /
+                  type: string
+                  format: 'inet:uri'
+                handler:
+                  type: string
+                  format: route-handler
+          required: false
+      responses:
+        '201':
+          description: Expected response for merging into collection
+    parameters:
+      - name: name
+        in: path
+        required: true
+        description: A key uniquely identifying router item
+        type: string
+        format: leafref
+  '/yang-express:server/router/{name}/route/{path,handler}':
+    get:
+      summary: View detail on route
+      deprecated: false
+      responses:
+        '200':
+          description: Expected response of route
+          schema:
+            type: object
+            required:
+              - handler
+            properties:
+              path:
+                default: /
+                type: string
+                format: 'inet:uri'
+              handler:
+                type: string
+                format: route-handler
+    put:
+      summary: Update details on route
+      deprecated: false
+      parameters:
+        - name: route
+          in: body
+          schema:
+            type: object
+            required:
+              - handler
+            properties:
+              path:
+                default: /
+                type: string
+                format: 'inet:uri'
+              handler:
+                type: string
+                format: route-handler
+          required: false
+      responses:
+        '200':
+          description: Expected response of route
+          schema:
+            type: object
+            required:
+              - handler
+            properties:
+              path:
+                default: /
+                type: string
+                format: 'inet:uri'
+              handler:
+                type: string
+                format: route-handler
+    patch:
+      summary: Merge details on route
+      deprecated: false
+      parameters:
+        - name: route
+          in: body
+          schema:
+            type: object
+            required:
+              - handler
+            properties:
+              path:
+                default: /
+                type: string
+                format: 'inet:uri'
+              handler:
+                type: string
+                format: route-handler
+          required: false
+      responses:
+        '200':
+          description: Expected response of route
+          schema:
+            type: object
+            required:
+              - handler
+            properties:
+              path:
+                default: /
+                type: string
+                format: 'inet:uri'
+              handler:
+                type: string
+                format: route-handler
+    delete:
+      summary: Delete route from router
+      deprecated: false
+      responses:
+        '204':
+          description: Expected response for delete
+    parameters:
+      - name: 'path,handler'
+        in: path
+        required: true
+        type: string
+        format: composite
+        description: A composite key uniquely identifying route item
+      - name: name
+        in: path
+        required: true
+        description: A key uniquely identifying router item
+        type: string
+        format: leafref
+  '/yang-express:run':
+    post:
+      description: Starts an instance of yang-express based on provided parameters.
+      summary: Invokes run in yang-express
+      deprecated: false
+      parameters:
+        - name: 'run:input'
+          in: body
+          schema:
+            type: object
+            properties:
+              port:
+                type: integer
+                format: uint16
+              hostname:
+                type: string
+                format: string
+              feature:
+                type: array
+                items:
+                  type: string
+                  format: identityref
+              modules:
+                type: array
+                items:
+                  type: string
+                  format: 'meta:meta-identifier'
+          required: false
+      responses:
+        '200':
+          description: Expected response of run
+          schema:
+            $ref: '#/definitions/express:express-server'
 definitions:
-  Pet:
+  'express:express-server':
     allOf:
-      - $ref: '#/definitions/NewPet'
-      - required:
-        - id
-        properties:
-          id:
+      - $ref: '#/definitions/express:routers-list'
+      - properties:
+          port:
+            default: '5000'
             type: integer
-            format: int64
-  NewPet:
+            format: uint16
+          hostname:
+            type: string
+            format: string
+          features:
+            type: array
+            items:
+              type: string
+              format: identityref
+  'express:routers-list':
+    type: object
+    properties:
+      router:
+        type: array
+        items:
+          $ref: '#/definitions/yang-router'
+  yang-router:
+    type: object
     required:
       - name
     properties:
       name:
         type: string
-      tag:
-        type: string
-  Error:
-    required:
-      - code
-      - message
-    properties:
-      code:
-        type: integer
-        format: int32
-      message:
-        type: string
+        format: leafref
+      route:
+        type: array
+        items:
+          type: object
+          required:
+            - handler
+          properties:
+            path:
+              default: /
+              type: string
+              format: 'inet:uri'
+            handler:
+              type: string
+              format: route-handler

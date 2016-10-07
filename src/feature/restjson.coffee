@@ -59,6 +59,7 @@ module.exports = ->
   ).call express.Router()
 
   @engine.once "enable:restjson", (restjson) ->
+    debug? "[restjson] enabling feature into express"
     app = @express
     app.set 'json spaces', 2
     app.enable 'restjson'

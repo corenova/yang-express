@@ -1,0 +1,22 @@
+yang-openapi:info:
+  title: PetStore
+  description: |
+    Example of YANG model-driven PetStore implementation
+
+    This output was generated using
+    [yang-swagger](http://github.com/corenova/yang-swagger).
+  version: '1.0'
+  contact:
+    name: Peter K. Lee
+    url: https://github.com/corenova/yang-express
+    email: peter@corenova.com
+  license:
+    name: 'Apache-2.0'
+
+example-petstore:pet:
+  - id: 1
+    name: happy
+    tag: friendly
+  - id: 2
+    name: boba
+    tag: hyper

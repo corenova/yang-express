@@ -11,9 +11,10 @@
  
 require 'yang-js'
 debug = require('debug')('yang:express') if process.env.DEBUG?
+config = require 'config'
 express = require 'express'
 
-module.exports = require('../schema/yang-express.yang').bind {
+module.exports = require('../yang-express.yang').bind {
 
   # to use existing instance of express, you can .bind with an existing app
   '[express]': -> @content ?= express()
@@ -25,17 +26,24 @@ module.exports = require('../schema/yang-express.yang').bind {
 
   run: ->
     app = @engine.express
+    @input.feature ?= [ 'restjson' ]
+    @in('/server').merge
+      port: @input.port
+      hostname: @input.hostname
+      features: @input.feature
+    @enable feature for feature in @input.feature
+    @input.modules.forEach (name) =>
+      debug? "[run] import/route '#{name}'"
+      try m = @access name
+      catch
+        try m = @schema.constructor.import(name).eval(config)
+        catch e
+          console.error e
+          throw new Error "unable to import '#{name}' YANG module, check your local 'package.json' for models"
+      @in('/server/router').create name: m.name
     server = @get('/server')
-    server.port = @input.port
-    server.hostname = @input.hostname
-    includes = [].concat(@input.include).filter(Boolean)
-    for include in includes
-      debug? "include/route '#{include}'"
-      try @schema.constructor.import(include).eval(@input.config)
-      catch e
-        console.error e
-        throw new Error "unable to include '#{include}' YANG module, check your local 'package.json' for models"
-      @in('/server/router').merge name: include
+    unless server.router?.length
+      throw new Error "cannot run without any modules to route"
     @output = new Promise (resolve, reject) ->
       http = app.listen server.port
       http.on 'listening', ->

@@ -1,0 +1,19 @@
+yang-openapi:info:
+  title: YANG-EXPRESS
+  description: |
+    Provides YANG model-driven middleware routing based on Express.js
+    web framework.
+
+    Minimalistic web framework leveraging powerful YANG schema expressions
+    according to [RFC 6020](http://tools.ietf.org/html/rfc6020). Generates
+    dynamic model-driven interfaces with flexible plugin system.
+
+    This output was generated using
+    [yang-swagger](http://github.com/corenova/yang-swagger).
+  version: '1.0'
+  contact:
+    name: Peter K. Lee
+    url: https://github.com/corenova/yang-express
+    email: peter@corenova.com
+  license:
+    name: 'Apache-2.0'

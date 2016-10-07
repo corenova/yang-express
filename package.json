@@ -1,6 +1,6 @@
 {
   "name": "yang-express",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "YANG model-driven Express framework",
   "keywords": [
     "yang",
@@ -20,12 +20,16 @@
   "license": "Apache-2.0",
   "repository": "corenova/yang-express",
   "main": "lib/yang-express.js",
+  "bin": {
+    "yang-express": "./bin/yang-express"
+  },
+  "preferGlobal": true,
   "models": {
     "ietf-inet-types": "yang-js",
     "ietf-yang-library": "yang-js",
     "yang-meta-types": "yang-js",
-    "yang-express": "./lib/yang-express.js",
-    "yang-openapi": "./schema/yang-openapi.yang"
+    "yang-openapi": "yang-swagger",
+    "yang-express": "./lib/yang-express.js"
   },
   "dependencies": {
     "body-parser": "^1.15.2",
@@ -34,7 +38,8 @@
     "express": "^4.14.0",
     "js-yaml": "^3.6.1",
     "socket.io": "^1.4.8",
-    "yang-js": "^0.16.1"
+    "yang-js": "^0.16.4",
+    "yang-swagger": "^1.0.4"
   },
   "devDependencies": {
     "coffee-script": ">=1.7.0",
@@ -49,10 +54,12 @@
     "clean": "rimraf dist/* lib/*",
     "prebuild": "npm run clean -s && mkdir -p dist",
     "build:src": "coffee -o lib -c src",
-    "build": "npm run build:src",
+    "build:api": "yang-swagger -f yaml -o swagger.yaml yang-express",
+    "build": "npm run build:src && npm run build:api",
     "prepublish": "npm run build",
     "pretest": "npm run build",
     "test": "mocha",
-    "example:petstore": "npm run build && coffee ./example/petstore-express.coffee"
+    "start": "bin/yang-express yang-express",
+    "example:petstore": "DEBUG=yang:express NODE_ENV=example NODE_APP_INSTANCE=petstore bin/yang-express example/example-petstore.yang"
   }
 }

@@ -6,7 +6,6 @@ module yang-express {
   import ietf-inet-types { prefix inet; }
   import ietf-yang-library { prefix yanglib; }
   import yang-meta-types { prefix meta; }
-  import yang-openapi { prefix openapi; }
 
   organization
     "Corenova Technologies, Inc.";
@@ -93,15 +92,17 @@ module yang-express {
     }
   }
   grouping express-server {
-    container info {
-      uses openapi:info;
-    }
     leaf port {
       type uint16;
       default 5000;
     }
     leaf hostname {
       type string;
+    }
+    leaf-list features {
+      type identityref {
+        base router;
+      }
     }
     uses routers-list;
   }
@@ -115,7 +116,8 @@ module yang-express {
    * Remote Procedure Calls
    */
   rpc run {
-    if-feature express;
+    description
+      "Starts an instance of yang-express based on provided parameters.";
     input {
       leaf port {
         type uint16;
@@ -123,10 +125,14 @@ module yang-express {
       leaf hostname {
         type string;
       }
-      leaf-list include {
+      leaf-list feature {
+        type identityref {
+          base router;
+        }
+      }
+      leaf-list modules {
         type meta:meta-identifier;
       }
-      container config;
     }
     output {
       uses express-server;

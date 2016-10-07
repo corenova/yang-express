@@ -31,7 +31,7 @@ paths:
         '200':
           description: Expected response of server
           schema:
-            $ref: '#/definitions/express-server'
+            $ref: '#/definitions/express:express-server'
     put:
       summary: Update details on server
       deprecated: false
@@ -39,13 +39,13 @@ paths:
         - name: server
           in: body
           schema:
-            $ref: '#/definitions/express-server'
+            $ref: '#/definitions/express:express-server'
           required: false
       responses:
         '200':
           description: Expected response of server
           schema:
-            $ref: '#/definitions/express-server'
+            $ref: '#/definitions/express:express-server'
     patch:
       summary: Merge details on server
       deprecated: false
@@ -53,13 +53,13 @@ paths:
         - name: server
           in: body
           schema:
-            $ref: '#/definitions/express-server'
+            $ref: '#/definitions/express:express-server'
           required: false
       responses:
         '200':
           description: Expected response of server
           schema:
-            $ref: '#/definitions/express-server'
+            $ref: '#/definitions/express:express-server'
     delete:
       summary: Delete server from yang-express
       deprecated: false
@@ -635,11 +635,11 @@ paths:
         '200':
           description: Expected response of run
           schema:
-            $ref: '#/definitions/express-server'
+            $ref: '#/definitions/express:express-server'
 definitions:
-  express-server:
+  'express:express-server':
     allOf:
-      - $ref: '#/definitions/routers-list'
+      - $ref: '#/definitions/express:routers-list'
       - properties:
           port:
             default: '5000'
@@ -653,7 +653,7 @@ definitions:
             items:
               type: string
               format: identityref
-  routers-list:
+  'express:routers-list':
     type: object
     properties:
       router:

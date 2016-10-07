@@ -104,13 +104,13 @@ module yang-express {
         base router;
       }
     }
-    uses routers-list;
+    uses express:routers-list;
   }
   /*
    * Configuration data nodes
    */
   container server {
-    uses express-server;
+    uses express:express-server;
   }
   /*
    * Remote Procedure Calls
@@ -135,7 +135,7 @@ module yang-express {
       }
     }
     output {
-      uses express-server;
+      uses express:express-server;
     }
   }
 }

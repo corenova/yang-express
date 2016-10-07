@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-var yaml = require('js-yaml');
 var argv = require('minimist')(process.argv.slice(2), {
   boolean: [ 'help' ],
   alias: {
@@ -20,15 +19,15 @@ if (argv.h === true) {
   process.exit();
 }
 
-var config = argv.config = require('config');
+var config = require('config');
 var express = require('..').eval(config)
+var yaml = require('js-yaml');
 
 argv.modules = argv._
 express.in('run')
   .invoke(argv)
   .then(function (res) {
-    console.info("yang-express started with:");
-    console.info(yaml.dump(res));
+	console.info(yaml.dump(res));
   })
   .catch(function (err) {
     console.error(err);

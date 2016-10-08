@@ -1,6 +1,6 @@
 # OPENAPI (swagger) specification feature
 
-debug = require('debug')('yang:express') if process.env.DEBUG?
+debug = require('debug')('yang-express:openapi') if process.env.DEBUG?
 config = require 'config'
 express = require 'express'
 swagger = require('yang-swagger').eval(config)
@@ -32,7 +32,7 @@ module.exports = ->
   ).call express.Router()
 
   @engine.once "enable:openapi", (openapi) ->
-    debug? "[openapi] enabling feature into express"
+    debug? "enabling feature into express"
     app = @express
     app.set 'json spaces', 2
     app.enable 'openapi'

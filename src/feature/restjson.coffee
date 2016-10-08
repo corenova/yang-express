@@ -1,6 +1,6 @@
 # RESTJSON YANG model-driven middleware router feature binding
 
-debug = require('debug')('yang:express') if process.env.DEBUG?
+debug = require('debug')('yang-express:restjson') if process.env.DEBUG?
 express = require 'express'
 bp = require 'body-parser'
 
@@ -9,11 +9,12 @@ module.exports = ->
   @content ?= (->
     @use bp.urlencoded(extended:true), bp.json(strict:true, type:'*/json')
     @use (req, res, next) ->
-      return next 'route' if req.app.disabled 'restjson' or req.path is '/'
+      return next 'route' if req.app.disabled('restjson') or req.path is '/'
       routers = ctx.get('/server/router/name')
       routers = [ routers ] unless Array.isArray routers
+      debug? "searching #{routers}"
       for router in routers when ctx.access(router).in(req.path)?
-        debug? "[restjson] found '#{router}' for #{req.path}"
+        debug? "found '#{router}' for #{req.path}"
         req.model = ctx.access router
         break
       next()
@@ -25,7 +26,7 @@ module.exports = ->
     @route '*'
     .all (req, res, next) ->
       if req.model? and req.accepts('json')
-        debug? "[restjson] calling #{req.method} on #{req.path}"
+        debug? "calling #{req.method} on #{req.path}"
         req.prop = req.model.in(req.path)
         next()
       else next 'route'
@@ -59,7 +60,7 @@ module.exports = ->
   ).call express.Router()
 
   @engine.once "enable:restjson", (restjson) ->
-    debug? "[restjson] enabling feature into express"
+    debug? "enabling feature into express"
     app = @express
     app.set 'json spaces', 2
     app.enable 'restjson'

@@ -10,7 +10,7 @@
 # additional routing endpoints.
  
 require 'yang-js'
-debug = require('debug')('yang:express') if process.env.DEBUG?
+debug = require('debug')('yang-express') if process.env.DEBUG?
 config = require 'config'
 express = require 'express'
 
@@ -40,6 +40,7 @@ module.exports = require('../yang-express.yang').bind {
         catch e
           console.error e
           throw new Error "unable to import '#{name}' YANG module, check your local 'package.json' for models"
+      debug? @root.constructor.Store
       @in('/server/router').create name: m.name
     server = @get('/server')
     unless server.router?.length

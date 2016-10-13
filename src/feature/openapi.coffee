@@ -21,11 +21,11 @@ module.exports = ->
       routers = [ routers ] unless Array.isArray routers
       swagger.in('transform')
         .invoke modules: routers
-        .then (spec) ->
+        .then (output) ->
           format = switch
             when req.accepts('yaml')? then 'yaml'
             else 'json'
-          swagger.in('serialize').invoke spec: spec, format: format
+          output.spec.serialize format: format
         .then (out) -> res.send out.data
         .catch (err) -> next err
     return this

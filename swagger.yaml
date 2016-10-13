@@ -506,8 +506,6 @@ paths:
           description: Expected response of route
           schema:
             type: object
-            required:
-              - handler
             properties:
               path:
                 default: /
@@ -524,8 +522,6 @@ paths:
           in: body
           schema:
             type: object
-            required:
-              - handler
             properties:
               path:
                 default: /
@@ -540,8 +536,6 @@ paths:
           description: Expected response of route
           schema:
             type: object
-            required:
-              - handler
             properties:
               path:
                 default: /
@@ -558,8 +552,6 @@ paths:
           in: body
           schema:
             type: object
-            required:
-              - handler
             properties:
               path:
                 default: /
@@ -574,8 +566,6 @@ paths:
           description: Expected response of route
           schema:
             type: object
-            required:
-              - handler
             properties:
               path:
                 default: /
@@ -662,8 +652,6 @@ definitions:
           $ref: '#/definitions/yang-router'
   yang-router:
     type: object
-    required:
-      - name
     properties:
       name:
         type: string

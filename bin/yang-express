@@ -4,22 +4,29 @@ var argv = require('minimist')(process.argv.slice(2), {
   boolean: [ 'help' ],
   alias: {
     help: 'h',
+	config: 'c',
 	port: 'p',
 	feature: 'f',
-  }
+  },
+  string: [ 'config', 'feature' ]
 });
 
 if (argv.h === true) {
   var help;
   help  = "  Usage: yang-express [options] modules...\n\n";
   help += "  Options:\n";
-  help += "    -p, --port <number>    Run yang-express on <port>\n";
-  help += "    -f, --feature <name>   Enable one or more features: (restjson, openapi, etc.)\n";
+  help += "    -c, --config <filename>  Use <filename> to retrieve configuration data (default: uses 'config' directory)\n";
+  help += "    -f, --feature <name>     Enable one or more features: (restjson, openapi, etc.)\n";
+  help += "    -p, --port <number>      Run yang-express on <port>\n";
   console.info(help);
   process.exit();
 }
 
 var config = require('config');
+if (argv.config) {
+  var path = require('path');
+  config = config.util.parseFile(path.resolve(argv.config));
+}
 var express = require('..').eval(config)
 var yaml = require('js-yaml');
 

@@ -18,6 +18,14 @@ The preferred installation is *global* for easy access to the
 `yang-express` utility but can also be used as a dependency module to
 enable YANG model-driven express app as part of your project.
 
+For development/testing, clone from repo and initialize:
+
+```bash
+$ git clone https://github.com/corenova/yang-express
+$ cd yang-express
+$ npm install
+```
+
 ## Features
 
 * Robust model-driven routing
@@ -26,10 +34,6 @@ enable YANG model-driven express app as part of your project.
 * Hierarchical (deeply nested) data tree
 * Adaptive validations
 * Flexibe RPCs and notifications
-
-This module also *inherits* all the features from
-[Express](http://expressjs.com) and
-[yang-js](http://github.com/corenova/yang-js).
 
 ## Quick Start
 

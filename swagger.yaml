@@ -68,7 +68,7 @@ paths:
           description: Expected response for delete
   '/yang-express:server/router':
     post:
-      summary: Creates one or more new router in express-server
+      summary: Creates one or more new router in routers-list
       deprecated: false
       parameters:
         - name: router
@@ -76,28 +76,7 @@ paths:
           schema:
             type: array
             items:
-              allOf:
-                - $ref: '#/definitions/yang-router'
-                - required:
-                    - name
-                  properties:
-                    name:
-                      type: string
-                      format: leafref
-                    route:
-                      type: array
-                      items:
-                        type: object
-                        required:
-                          - handler
-                        properties:
-                          path:
-                            default: /
-                            type: string
-                            format: 'inet:uri'
-                          handler:
-                            type: string
-                            format: route-handler
+              $ref: '#/definitions/yang-router'
           required: false
       responses:
         '200':
@@ -105,30 +84,9 @@ paths:
           schema:
             type: array
             items:
-              allOf:
-                - $ref: '#/definitions/yang-router'
-                - required:
-                    - name
-                  properties:
-                    name:
-                      type: string
-                      format: leafref
-                    route:
-                      type: array
-                      items:
-                        type: object
-                        required:
-                          - handler
-                        properties:
-                          path:
-                            default: /
-                            type: string
-                            format: 'inet:uri'
-                          handler:
-                            type: string
-                            format: route-handler
+              $ref: '#/definitions/yang-router'
     get:
-      summary: List all routers from express-server
+      summary: List all routers from routers-list
       deprecated: false
       responses:
         '200':
@@ -136,28 +94,7 @@ paths:
           schema:
             type: array
             items:
-              allOf:
-                - $ref: '#/definitions/yang-router'
-                - required:
-                    - name
-                  properties:
-                    name:
-                      type: string
-                      format: leafref
-                    route:
-                      type: array
-                      items:
-                        type: object
-                        required:
-                          - handler
-                        properties:
-                          path:
-                            default: /
-                            type: string
-                            format: 'inet:uri'
-                          handler:
-                            type: string
-                            format: route-handler
+              $ref: '#/definitions/yang-router'
     put:
       summary: Replace the entire router collection
       deprecated: false
@@ -167,28 +104,7 @@ paths:
           schema:
             type: array
             items:
-              allOf:
-                - $ref: '#/definitions/yang-router'
-                - required:
-                    - name
-                  properties:
-                    name:
-                      type: string
-                      format: leafref
-                    route:
-                      type: array
-                      items:
-                        type: object
-                        required:
-                          - handler
-                        properties:
-                          path:
-                            default: /
-                            type: string
-                            format: 'inet:uri'
-                          handler:
-                            type: string
-                            format: route-handler
+              $ref: '#/definitions/yang-router'
           required: false
       responses:
         '201':
@@ -202,28 +118,7 @@ paths:
           schema:
             type: array
             items:
-              allOf:
-                - $ref: '#/definitions/yang-router'
-                - required:
-                    - name
-                  properties:
-                    name:
-                      type: string
-                      format: leafref
-                    route:
-                      type: array
-                      items:
-                        type: object
-                        required:
-                          - handler
-                        properties:
-                          path:
-                            default: /
-                            type: string
-                            format: 'inet:uri'
-                          handler:
-                            type: string
-                            format: route-handler
+              $ref: '#/definitions/yang-router'
           required: false
       responses:
         '201':
@@ -236,28 +131,7 @@ paths:
         '200':
           description: Expected response of router
           schema:
-            allOf:
-              - $ref: '#/definitions/yang-router'
-              - required:
-                  - name
-                properties:
-                  name:
-                    type: string
-                    format: leafref
-                  route:
-                    type: array
-                    items:
-                      type: object
-                      required:
-                        - handler
-                      properties:
-                        path:
-                          default: /
-                          type: string
-                          format: 'inet:uri'
-                        handler:
-                          type: string
-                          format: route-handler
+            $ref: '#/definitions/yang-router'
     put:
       summary: Update details on router
       deprecated: false
@@ -265,55 +139,13 @@ paths:
         - name: router
           in: body
           schema:
-            allOf:
-              - $ref: '#/definitions/yang-router'
-              - required:
-                  - name
-                properties:
-                  name:
-                    type: string
-                    format: leafref
-                  route:
-                    type: array
-                    items:
-                      type: object
-                      required:
-                        - handler
-                      properties:
-                        path:
-                          default: /
-                          type: string
-                          format: 'inet:uri'
-                        handler:
-                          type: string
-                          format: route-handler
+            $ref: '#/definitions/yang-router'
           required: false
       responses:
         '200':
           description: Expected response of router
           schema:
-            allOf:
-              - $ref: '#/definitions/yang-router'
-              - required:
-                  - name
-                properties:
-                  name:
-                    type: string
-                    format: leafref
-                  route:
-                    type: array
-                    items:
-                      type: object
-                      required:
-                        - handler
-                      properties:
-                        path:
-                          default: /
-                          type: string
-                          format: 'inet:uri'
-                        handler:
-                          type: string
-                          format: route-handler
+            $ref: '#/definitions/yang-router'
     patch:
       summary: Merge details on router
       deprecated: false
@@ -321,57 +153,15 @@ paths:
         - name: router
           in: body
           schema:
-            allOf:
-              - $ref: '#/definitions/yang-router'
-              - required:
-                  - name
-                properties:
-                  name:
-                    type: string
-                    format: leafref
-                  route:
-                    type: array
-                    items:
-                      type: object
-                      required:
-                        - handler
-                      properties:
-                        path:
-                          default: /
-                          type: string
-                          format: 'inet:uri'
-                        handler:
-                          type: string
-                          format: route-handler
+            $ref: '#/definitions/yang-router'
           required: false
       responses:
         '200':
           description: Expected response of router
           schema:
-            allOf:
-              - $ref: '#/definitions/yang-router'
-              - required:
-                  - name
-                properties:
-                  name:
-                    type: string
-                    format: leafref
-                  route:
-                    type: array
-                    items:
-                      type: object
-                      required:
-                        - handler
-                      properties:
-                        path:
-                          default: /
-                          type: string
-                          format: 'inet:uri'
-                        handler:
-                          type: string
-                          format: route-handler
+            $ref: '#/definitions/yang-router'
     delete:
-      summary: Delete router from express-server
+      summary: Delete router from routers-list
       deprecated: false
       responses:
         '204':
@@ -385,7 +175,7 @@ paths:
         format: leafref
   '/yang-express:server/router/{name}/route':
     post:
-      summary: Creates one or more new route in router
+      summary: Creates one or more new route in yang-router
       deprecated: false
       parameters:
         - name: route
@@ -423,7 +213,7 @@ paths:
                   type: string
                   format: route-handler
     get:
-      summary: List all routes from router
+      summary: List all routes from yang-router
       deprecated: false
       responses:
         '200':
@@ -585,7 +375,7 @@ paths:
                 type: string
                 format: route-handler
     delete:
-      summary: Delete route from router
+      summary: Delete route from yang-router
       deprecated: false
       responses:
         '204':

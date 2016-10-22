@@ -6,6 +6,13 @@ bp = require 'body-parser'
 
 module.exports = ->
   ctx = this
+  unless @content?
+    @engine.once "enable:restjson", (restjson) ->
+      debug? "enabling feature into express"
+      app = @express
+      app.set 'json spaces', 2
+      app.enable 'restjson'
+      app.use restjson
   @content ?= (->
     @use bp.urlencoded(extended:true), bp.json(strict:true, type:'*/json')
     @use (req, res, next) ->
@@ -63,10 +70,3 @@ module.exports = ->
       
     return this
   ).call express.Router()
-
-  @engine.once "enable:restjson", (restjson) ->
-    debug? "enabling feature into express"
-    app = @express
-    app.set 'json spaces', 2
-    app.enable 'restjson'
-    app.use restjson

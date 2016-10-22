@@ -10,10 +10,17 @@ mimes = [ 'openapi+yaml', 'openapi+json', 'yaml', 'json' ]
 
 module.exports = (value) ->
   ctx = this
+  unless @content?
+    @engine.once "enable:openapi", (openapi) ->
+      debug? "enabling feature into express"
+      app = @express
+      app.set 'json spaces', 2
+      app.enable 'openapi'
+      app.use openapi
   @content ?= (->
     @route '/openapi.spec'
     .all (req, res, next) ->
-      return next 'route' unless req.app.enabled('openapi') and req.app.enabled('restjson')
+      return next 'route' unless req.app.enabled('openapi')
       next()
     .get (req, res, next) ->
       routers = ctx.get('/server/router/name')
@@ -31,9 +38,3 @@ module.exports = (value) ->
     return this
   ).call express.Router()
 
-  @engine.once "enable:openapi", (openapi) ->
-    debug? "enabling feature into express"
-    app = @express
-    app.set 'json spaces', 2
-    app.enable 'openapi'
-    app.use openapi

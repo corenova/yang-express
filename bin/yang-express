@@ -31,7 +31,7 @@ var express = require('..').eval(config)
 var yaml = require('js-yaml');
 
 argv.modules  = argv._
-argv.features = argv.feature
+argv.features = [].concat(argv.feature)
 express.in('run')
   .invoke(argv)
   .then(function (res) {

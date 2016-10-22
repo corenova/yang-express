@@ -30,7 +30,8 @@ if (argv.config) {
 var express = require('..').eval(config)
 var yaml = require('js-yaml');
 
-argv.modules = argv._
+argv.modules  = argv._
+argv.features = argv.feature
 express.in('run')
   .invoke(argv)
   .then(function (res) {

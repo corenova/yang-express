@@ -410,7 +410,7 @@ paths:
               hostname:
                 type: string
                 format: string
-              feature:
+              features:
                 type: array
                 items:
                   type: string

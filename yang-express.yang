@@ -124,7 +124,7 @@ module yang-express {
       leaf hostname {
         type string;
       }
-      leaf-list feature {
+      leaf-list features {
         type identityref {
           base router;
         }

@@ -38,8 +38,8 @@
     "express": "^4.14.0",
     "js-yaml": "^3.6.1",
     "socket.io": "^1.4.8",
-    "yang-js": "^0.16.11",
-    "yang-swagger": "^1.1.2"
+    "yang-js": "^0.16.16",
+    "yang-swagger": "^1.2.1"
   },
   "devDependencies": {
     "coffee-script": ">=1.7.0",
@@ -60,6 +60,6 @@
     "pretest": "npm run build",
     "test": "mocha",
     "start": "bin/yang-express yang-express",
-    "example:petstore": "DEBUG=yang:express NODE_ENV=example NODE_APP_INSTANCE=petstore bin/yang-express example/example-petstore.yang"
+    "example:petstore": "NODE_ENV=example NODE_APP_INSTANCE=petstore bin/yang-express example/example-petstore.yang"
   }
 }

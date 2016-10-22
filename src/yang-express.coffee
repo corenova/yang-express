@@ -26,13 +26,10 @@ module.exports = require('../yang-express.yang').bind {
 
   run: ->
     app = @engine.express
-    @input.feature ?= [ 'restjson' ]
-    @in('/server').merge
-      port: @input.port
-      hostname: @input.hostname
-      features: @input.feature
-    @enable feature for feature in @input.feature
-    @input.modules.forEach (name) =>
+    @input.features ?= [ 'restjson' ]
+    @in('/server').merge @input
+    @enable feature for feature in @input.features
+    @input.modules?.forEach (name) =>
       debug? "[run] import/route '#{name}'"
       try m = @access name
       catch

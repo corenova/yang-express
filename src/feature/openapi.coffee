@@ -8,7 +8,7 @@ swagger = require('yang-swagger').eval(config)
 # TODO: do something with this info...
 mimes = [ 'openapi+yaml', 'openapi+json', 'yaml', 'json' ]
 
-module.exports = ->
+module.exports = (value) ->
   ctx = this
   @content ?= (->
     @route '/openapi.spec'

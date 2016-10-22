@@ -53,8 +53,13 @@ module.exports = ->
 
     # setup default error handler
     @use (err, req, res, next) ->
-      console.error err.stack
-      res.status(500).send(error: message: err.message)
+      if err instanceof Error
+        console.error err.stack
+        err =
+          name:    err.name
+          message: err.message
+          context: err.context?.toString()
+      res.status(500).send(error: err)
       
     return this
   ).call express.Router()

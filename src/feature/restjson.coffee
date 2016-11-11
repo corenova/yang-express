@@ -19,7 +19,7 @@ module.exports = ->
       return next 'route' if req.app.disabled('restjson') or req.path is '/'
       routers = ctx.get('/server/router/name')
       routers = [ routers ] unless Array.isArray routers
-      debug? "searching #{routers}"
+      debug? "searching #{routers} for #{req.path}"
       for router in routers when ctx.access(router).in(req.path)?
         debug? "found '#{router}' for #{req.path}"
         req.model = ctx.access router

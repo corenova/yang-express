@@ -26,7 +26,8 @@ module.exports = require('../yang-express.yang').bind {
 
   run: ->
     app = @engine.express
-    @input.features ?= [ 'restjson' ]
+    unless @input.features? and @input.features.length
+      @throw "cannot run without any features enabled"
     @in('/server').merge @input
     @enable feature for feature in @input.features
     @input.modules?.forEach (name) =>
@@ -37,14 +38,14 @@ module.exports = require('../yang-express.yang').bind {
         catch e
           console.error e
           throw new Error "unable to import '#{name}' YANG module, check your local 'package.json' for models"
-      debug? @root.constructor.Store
       @in('/server/router').create name: m.name
     server = @get('/server')
     unless server.router?.length
-      throw new Error "cannot run without any modules to route"
+      @throw "cannot run without any modules to route"
     @output = new Promise (resolve, reject) ->
       http = app.listen server.port
       http.on 'listening', ->
+        debug? "running on #{server.port}"
         app.emit 'listening', http
         resolve server
 }

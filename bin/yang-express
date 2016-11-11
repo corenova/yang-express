@@ -33,7 +33,7 @@ var yaml = require('js-yaml');
 argv.modules  = argv._
 argv.features = [].concat(argv.feature)
 express.in('run')
-  .invoke(argv)
+  .do(argv)
   .then(function (res) {
 	console.info(yaml.dump(res));
   })

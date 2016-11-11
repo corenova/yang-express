@@ -73,7 +73,6 @@ module yang-express {
       }
       list route {
         key "path handler";
-        min-elements 1;
         leaf path {
           type inet:uri;
           default '/';

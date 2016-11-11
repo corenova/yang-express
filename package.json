@@ -1,6 +1,6 @@
 {
   "name": "yang-express",
-  "version": "0.4.6",
+  "version": "0.4.7",
   "description": "YANG model-driven Express framework",
   "keywords": [
     "yang",
@@ -39,7 +39,7 @@
     "js-yaml": "^3.6.1",
     "socket.io": "^1.4.8",
     "yang-js": "^0.16.18",
-    "yang-swagger": "^1.2.1"
+    "yang-swagger": "^1.2.2"
   },
   "devDependencies": {
     "coffee-script": ">=1.7.0",

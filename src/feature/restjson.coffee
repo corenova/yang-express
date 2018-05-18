@@ -7,7 +7,7 @@ bp = require 'body-parser'
 module.exports = ->
   ctx = this
   unless @content?
-    @engine.once "enable:restjson", (restjson) ->
+    @instance.once "enable:restjson", (restjson) ->
       debug? "enabling feature into express"
       app = @express
       app.set 'json spaces', 2
@@ -51,8 +51,8 @@ module.exports = ->
       switch
         when Array.isArray req.prop then next 'route'
         when req.prop.kind in [ 'rpc', 'action' ]
-          req.prop.invoke(req.body)
-            .then (res) -> res.send res
+          req.prop.do(req.body)
+            .then  (out) -> res.send out
             .catch (err) -> res.status(500).send err
         when req.prop.kind is 'list' and not req.prop.key?
           res.status(201).send (transact req.prop, -> @create req.body)

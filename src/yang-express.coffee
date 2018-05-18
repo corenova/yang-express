@@ -25,7 +25,7 @@ module.exports = require('../yang-express.yang').bind {
   '/server/hostname': -> @content ?= require('os').hostname()
 
   run: ->
-    app = @engine.express
+    app = @instance.express
     unless @input.features? and @input.features.length
       @throw "cannot run without any features enabled"
     @in('/server').merge @input
@@ -37,7 +37,7 @@ module.exports = require('../yang-express.yang').bind {
         try m = @schema.constructor.import(name).eval(config)
         catch e
           console.error e
-          throw new Error "unable to import '#{name}' YANG module, check your local 'package.json' for models"
+          throw new Error "unable to import '#{name}' YANG module, check your local 'package.json' for yang.resolve or models"
       @in('/server/router').create name: m.name
     server = @get('/server')
     unless server.router?.length

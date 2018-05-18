@@ -1,6 +1,6 @@
 {
   "name": "yang-express",
-  "version": "0.4.7",
+  "version": "0.4.8",
   "description": "YANG model-driven Express framework",
   "keywords": [
     "yang",
@@ -24,12 +24,14 @@
     "yang-express": "./bin/yang-express"
   },
   "preferGlobal": true,
-  "models": {
-    "ietf-inet-types": "yang-js",
-    "ietf-yang-library": "yang-js",
-    "yang-meta-types": "yang-js",
-    "yang-openapi": "yang-swagger",
-    "yang-express": "./lib/yang-express.js"
+  "yang": {
+    "resolve": {
+      "ietf-inet-types": "yang-js",
+      "ietf-yang-library": "yang-js",
+      "yang-meta-types": "yang-js",
+      "yang-openapi": "yang-swagger",
+      "yang-express": "./lib/yang-express.js"
+    }
   },
   "dependencies": {
     "body-parser": "^1.15.2",
@@ -38,8 +40,8 @@
     "express": "^4.14.0",
     "js-yaml": "^3.6.1",
     "socket.io": "^1.4.8",
-    "yang-js": "^0.16.18",
-    "yang-swagger": "^1.2.2"
+    "yang-js": "^0.17.5",
+    "yang-swagger": "^1.2.4"
   },
   "devDependencies": {
     "coffee-script": ">=1.7.0",

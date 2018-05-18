@@ -7,7 +7,7 @@ module.exports = ->
   # TODO: support yield
   # @content ?= yield ....
   
-  @engine.once 'enable:websocket', (websocket) ->
+  @instance.once 'enable:websocket', (websocket) ->
     @express.once 'listening', (server) ->
       console.info "[websocket] binding to server"
       io = socketio server

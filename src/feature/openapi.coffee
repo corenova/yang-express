@@ -11,7 +11,7 @@ mimes = [ 'openapi+yaml', 'openapi+json', 'yaml', 'json' ]
 module.exports = (value) ->
   ctx = this
   unless @content?
-    @engine.once "enable:openapi", (openapi) ->
+    @instance.once "enable:openapi", (openapi) ->
       debug? "enabling feature into express"
       app = @express
       app.set 'json spaces', 2
@@ -27,7 +27,7 @@ module.exports = (value) ->
       return next 'route' unless routers?
       routers = [ routers ] unless Array.isArray routers
       swagger.in('transform')
-        .invoke modules: routers
+        .do modules: routers
         .then (output) ->
           format = switch
             when req.accepts('yaml')? then 'yaml'

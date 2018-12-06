@@ -28,6 +28,7 @@
     "resolve": {
       "ietf-inet-types": "yang-js",
       "ietf-yang-library": "yang-js",
+      "ietf-yang-types": "yang-js",
       "yang-meta-types": "yang-js",
       "yang-openapi": "yang-swagger",
       "yang-express": "./yang-express.js"

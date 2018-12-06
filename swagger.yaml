@@ -36,7 +36,25 @@ paths:
         '200':
           description: Expected response of server
           schema:
-            $ref: '#/definitions/express:express-server'
+            type: object
+            properties:
+              port:
+                default: '5000'
+                type: integer
+                format: uint16
+              hostname:
+                type: string
+                format: string
+              modules:
+                type: array
+                items:
+                  type: string
+                  format: leafref
+              routers:
+                type: array
+                items:
+                  type: string
+                  format: identityref
     put:
       tags:
         - yang-express
@@ -46,13 +64,49 @@ paths:
         - name: server
           in: body
           schema:
-            $ref: '#/definitions/express:express-server'
+            type: object
+            properties:
+              port:
+                default: '5000'
+                type: integer
+                format: uint16
+              hostname:
+                type: string
+                format: string
+              modules:
+                type: array
+                items:
+                  type: string
+                  format: leafref
+              routers:
+                type: array
+                items:
+                  type: string
+                  format: identityref
           required: false
       responses:
         '200':
           description: Expected response of server
           schema:
-            $ref: '#/definitions/express:express-server'
+            type: object
+            properties:
+              port:
+                default: '5000'
+                type: integer
+                format: uint16
+              hostname:
+                type: string
+                format: string
+              modules:
+                type: array
+                items:
+                  type: string
+                  format: leafref
+              routers:
+                type: array
+                items:
+                  type: string
+                  format: identityref
     patch:
       tags:
         - yang-express
@@ -62,13 +116,49 @@ paths:
         - name: server
           in: body
           schema:
-            $ref: '#/definitions/express:express-server'
+            type: object
+            properties:
+              port:
+                default: '5000'
+                type: integer
+                format: uint16
+              hostname:
+                type: string
+                format: string
+              modules:
+                type: array
+                items:
+                  type: string
+                  format: leafref
+              routers:
+                type: array
+                items:
+                  type: string
+                  format: identityref
           required: false
       responses:
         '200':
           description: Expected response of server
           schema:
-            $ref: '#/definitions/express:express-server'
+            type: object
+            properties:
+              port:
+                default: '5000'
+                type: integer
+                format: uint16
+              hostname:
+                type: string
+                format: string
+              modules:
+                type: array
+                items:
+                  type: string
+                  format: leafref
+              routers:
+                type: array
+                items:
+                  type: string
+                  format: identityref
     delete:
       tags:
         - yang-express
@@ -77,443 +167,3 @@ paths:
       responses:
         '204':
           description: Expected response for delete
-  '/yang-express:server/router':
-    post:
-      tags:
-        - yang-express
-      summary: Creates one or more new router in routers-list
-      deprecated: false
-      parameters:
-        - name: router
-          in: body
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/yang-router'
-          required: false
-      responses:
-        '200':
-          description: Expected response for creating router(s) in collection
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/yang-router'
-    get:
-      tags:
-        - yang-express
-      summary: List all routers from routers-list
-      deprecated: false
-      responses:
-        '200':
-          description: Expected response of routers
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/yang-router'
-    put:
-      tags:
-        - yang-express
-      summary: Replace the entire router collection
-      deprecated: false
-      parameters:
-        - name: router
-          in: body
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/yang-router'
-          required: false
-      responses:
-        '201':
-          description: Expected response for replacing collection
-    patch:
-      tags:
-        - yang-express
-      summary: Merge items into the router collection
-      deprecated: false
-      parameters:
-        - name: router
-          in: body
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/yang-router'
-          required: false
-      responses:
-        '201':
-          description: Expected response for merging into collection
-  '/yang-express:server/router/{name}':
-    get:
-      tags:
-        - yang-express
-      summary: View detail on router
-      deprecated: false
-      responses:
-        '200':
-          description: Expected response of router
-          schema:
-            $ref: '#/definitions/yang-router'
-    put:
-      tags:
-        - yang-express
-      summary: Update details on router
-      deprecated: false
-      parameters:
-        - name: router
-          in: body
-          schema:
-            $ref: '#/definitions/yang-router'
-          required: false
-      responses:
-        '200':
-          description: Expected response of router
-          schema:
-            $ref: '#/definitions/yang-router'
-    patch:
-      tags:
-        - yang-express
-      summary: Merge details on router
-      deprecated: false
-      parameters:
-        - name: router
-          in: body
-          schema:
-            $ref: '#/definitions/yang-router'
-          required: false
-      responses:
-        '200':
-          description: Expected response of router
-          schema:
-            $ref: '#/definitions/yang-router'
-    delete:
-      tags:
-        - yang-express
-      summary: Delete router from routers-list
-      deprecated: false
-      responses:
-        '204':
-          description: Expected response for delete
-    parameters:
-      - name: name
-        in: path
-        required: true
-        description: A key uniquely identifying router item
-        type: string
-        format: leafref
-  '/yang-express:server/router/{name}/route':
-    post:
-      tags:
-        - yang-express
-      summary: Creates one or more new route in yang-router
-      deprecated: false
-      parameters:
-        - name: route
-          in: body
-          schema:
-            type: array
-            items:
-              type: object
-              required:
-                - handler
-              properties:
-                path:
-                  default: /
-                  type: string
-                  format: 'inet:uri'
-                handler:
-                  type: string
-                  format: route-handler
-          required: false
-      responses:
-        '200':
-          description: Expected response for creating route(s) in collection
-          schema:
-            type: array
-            items:
-              type: object
-              required:
-                - handler
-              properties:
-                path:
-                  default: /
-                  type: string
-                  format: 'inet:uri'
-                handler:
-                  type: string
-                  format: route-handler
-    get:
-      tags:
-        - yang-express
-      summary: List all routes from yang-router
-      deprecated: false
-      responses:
-        '200':
-          description: Expected response of routes
-          schema:
-            type: array
-            items:
-              type: object
-              required:
-                - handler
-              properties:
-                path:
-                  default: /
-                  type: string
-                  format: 'inet:uri'
-                handler:
-                  type: string
-                  format: route-handler
-    put:
-      tags:
-        - yang-express
-      summary: Replace the entire route collection
-      deprecated: false
-      parameters:
-        - name: route
-          in: body
-          schema:
-            type: array
-            items:
-              type: object
-              required:
-                - handler
-              properties:
-                path:
-                  default: /
-                  type: string
-                  format: 'inet:uri'
-                handler:
-                  type: string
-                  format: route-handler
-          required: false
-      responses:
-        '201':
-          description: Expected response for replacing collection
-    patch:
-      tags:
-        - yang-express
-      summary: Merge items into the route collection
-      deprecated: false
-      parameters:
-        - name: route
-          in: body
-          schema:
-            type: array
-            items:
-              type: object
-              required:
-                - handler
-              properties:
-                path:
-                  default: /
-                  type: string
-                  format: 'inet:uri'
-                handler:
-                  type: string
-                  format: route-handler
-          required: false
-      responses:
-        '201':
-          description: Expected response for merging into collection
-    parameters:
-      - name: name
-        in: path
-        required: true
-        description: A key uniquely identifying router item
-        type: string
-        format: leafref
-  '/yang-express:server/router/{name}/route/{path,handler}':
-    get:
-      tags:
-        - yang-express
-      summary: View detail on route
-      deprecated: false
-      responses:
-        '200':
-          description: Expected response of route
-          schema:
-            type: object
-            required:
-              - handler
-            properties:
-              path:
-                default: /
-                type: string
-                format: 'inet:uri'
-              handler:
-                type: string
-                format: route-handler
-    put:
-      tags:
-        - yang-express
-      summary: Update details on route
-      deprecated: false
-      parameters:
-        - name: route
-          in: body
-          schema:
-            type: object
-            required:
-              - handler
-            properties:
-              path:
-                default: /
-                type: string
-                format: 'inet:uri'
-              handler:
-                type: string
-                format: route-handler
-          required: false
-      responses:
-        '200':
-          description: Expected response of route
-          schema:
-            type: object
-            required:
-              - handler
-            properties:
-              path:
-                default: /
-                type: string
-                format: 'inet:uri'
-              handler:
-                type: string
-                format: route-handler
-    patch:
-      tags:
-        - yang-express
-      summary: Merge details on route
-      deprecated: false
-      parameters:
-        - name: route
-          in: body
-          schema:
-            type: object
-            required:
-              - handler
-            properties:
-              path:
-                default: /
-                type: string
-                format: 'inet:uri'
-              handler:
-                type: string
-                format: route-handler
-          required: false
-      responses:
-        '200':
-          description: Expected response of route
-          schema:
-            type: object
-            required:
-              - handler
-            properties:
-              path:
-                default: /
-                type: string
-                format: 'inet:uri'
-              handler:
-                type: string
-                format: route-handler
-    delete:
-      tags:
-        - yang-express
-      summary: Delete route from yang-router
-      deprecated: false
-      responses:
-        '204':
-          description: Expected response for delete
-    parameters:
-      - name: 'path,handler'
-        in: path
-        required: true
-        type: string
-        format: composite
-        description: A composite key uniquely identifying route item
-      - name: name
-        in: path
-        required: true
-        description: A key uniquely identifying router item
-        type: string
-        format: leafref
-  '/yang-express:run':
-    post:
-      tags:
-        - yang-express
-      description: Starts an instance of yang-express based on provided parameters.
-      summary: Invokes run in yang-express
-      deprecated: false
-      parameters:
-        - name: 'run:input'
-          in: body
-          schema:
-            type: object
-            properties:
-              port:
-                type: integer
-                format: uint16
-              hostname:
-                type: string
-                format: string
-              features:
-                type: array
-                items:
-                  type: string
-                  format: identityref
-              modules:
-                type: array
-                items:
-                  type: string
-                  format: 'meta:meta-identifier'
-          required: false
-      responses:
-        '200':
-          description: Expected response of run
-          schema:
-            $ref: '#/definitions/express:express-server'
-definitions:
-  'express:express-server':
-    allOf:
-      - $ref: '#/definitions/express:routers-list'
-      - properties:
-          port:
-            default: '5000'
-            type: integer
-            format: uint16
-          hostname:
-            type: string
-            format: string
-          features:
-            type: array
-            items:
-              type: string
-              format: identityref
-  'express:routers-list':
-    type: object
-    properties:
-      router:
-        type: array
-        items:
-          $ref: '#/definitions/yang-router'
-  yang-router:
-    type: object
-    required:
-      - name
-    properties:
-      name:
-        type: string
-        format: leafref
-      route:
-        type: array
-        items:
-          type: object
-          required:
-            - handler
-          properties:
-            path:
-              default: /
-              type: string
-              format: 'inet:uri'
-            handler:
-              type: string
-              format: route-handler

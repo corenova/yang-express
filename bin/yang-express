@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+'use strict'
 
 var argv = require('minimist')(process.argv.slice(2), {
   boolean: [ 'help' ],
@@ -16,7 +17,7 @@ if (argv.h === true) {
   help  = "  Usage: yang-express [options] modules...\n\n";
   help += "  Options:\n";
   help += "    -c, --config <filename>  Use <filename> to retrieve configuration data (default: uses 'config' directory)\n";
-  help += "    -f, --feature <name>     Enable one or more features: (restjson, openapi, etc.)\n";
+  help += "    -r, --router <name>      Enable one or more routers: (restjson, openapi, etc.)\n";
   help += "    -p, --port <number>      Run yang-express on <port>\n";
   console.info(help);
   process.exit();
@@ -27,16 +28,26 @@ if (argv.config) {
   var path = require('path');
   config = config.util.parseFile(path.resolve(argv.config));
 }
-var express = require('..').eval(config)
-var yaml = require('js-yaml');
 
-argv.modules  = argv._
-argv.features = [].concat(argv.feature)
-express.in('run')
-  .do(argv)
-  .then(function (res) {
-	console.info(yaml.dump(res));
-  })
+const port = argv.port
+const routers = [].concat(argv.router)
+const modules = [].concat(argv._)
+
+var yang = require('yang-js');
+var schema = require('..').bind({
+
+})
+var schemas = modules.map(name => yang.import(name))
+var store = new yang.Store('express')
+store.add(schema)
+store.add(...schemas)
+store.set(config)
+
+store.in('/express:server').merge({
+  port, routers, modules
+})
+
+store.in('/express:listen').do()
   .catch(function (err) {
     console.error(err);
   });

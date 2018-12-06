@@ -5,7 +5,7 @@ module yang-express {
 
   import ietf-inet-types { prefix inet; }
   import ietf-yang-library { prefix yanglib; }
-  import yang-meta-types { prefix meta; }
+  import yang-openapi { prefix openapi; }
 
   organization
     "Corenova Technologies, Inc.";
@@ -14,6 +14,10 @@ module yang-express {
   description
     "This module provides YANG model-driven middleware routing";
 
+  revision 2018-11-12 {
+    description
+      "Update to ES6.";
+  }
   revision 2016-09-14 {
     description
       "Initial revision.";
@@ -34,17 +38,23 @@ module yang-express {
        remote management.";
     reference "http://expressjs.com";
   }
-  feature restjson {
+  feature router {
     if-feature express;
+  }
+  feature body-parser {
+    if-feature express;
+  }
+  feature restjson {
+    if-feature router;
+    if-feature body-parser;
     description "YANG model-driven REST/JSON middleware router";
   }
   feature openapi {
     if-feature restjson;
     description "YANG model-driven openapi/swagger 2.0 spec generator";
   }
-  feature websocket {
-    if-feature express;
-    description "YANG model-driven socket.io middleware router";
+  feature os {
+    description "Operating System runtime variables";
   }
   /*
    * Identities
@@ -52,88 +62,48 @@ module yang-express {
   identity router;
   identity restjson  { base router; }
   identity openapi   { base router; }
-  identity websocket { base router; }
-  /*
-   * Type Definitions
-   */
-  typedef route-handler {
-    type union {
-      type identityref { base router; }
-      type instance-identifier;
-    }
-  }
   /*
    * Groupings
    */
-  grouping routers-list {
-    grouping yang-router {
-      leaf name {
-        type leafref { path '/yanglib:modules-state/module/name'; }
-        mandatory true;
-      }
-      list route {
-        key "path handler";
-        leaf path {
-          type inet:uri;
-          default '/';
-        }
-        leaf handler {
-          type route-handler;
-          mandatory true;
-        }
-        status planned;
-      }
-    }
-    list router {
-      key 'name';
-      uses yang-router;
-    }
-  }
-  grouping express-server {
+  /*
+   * Configuration data nodes
+   */
+  container server {
     leaf port {
       type uint16;
       default 5000;
     }
     leaf hostname {
+      if-feature os;
       type string;
+      config false;
     }
-    leaf-list features {
+    leaf-list modules {
+      type leafref {
+        path '/yanglib:modules-state/module/name';
+      }
+    }
+    leaf-list routers {
       type identityref {
         base router;
       }
     }
-    uses express:routers-list;
-  }
-  /*
-   * Configuration data nodes
-   */
-  container server {
-    uses express:express-server;
   }
   /*
    * Remote Procedure Calls
    */
-  rpc run {
+  rpc listen {
+    if-feature express;
     description
       "Starts an instance of yang-express based on provided parameters.";
     input {
-      leaf port {
-        type uint16;
-      }
-      leaf hostname {
-        type string;
-      }
-      leaf-list features {
-        type identityref {
-          base router;
-        }
-      }
-      leaf-list modules {
-        type meta:meta-identifier;
+      anydata app {
+        description
+          "optional instance of express application";
       }
     }
     output {
-      uses express:express-server;
+      anydata instance;
     }
   }
 }

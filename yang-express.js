@@ -47,7 +47,7 @@ module.exports = require('./yang-express.yang').bind({
       }
       next()
     }
-    
+
     app.use(discover)
     for (let routerName of routers) {
       const router = this.use(routerName)

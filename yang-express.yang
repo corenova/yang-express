@@ -79,9 +79,11 @@ module yang-express {
       config false;
     }
     leaf-list modules {
-      type leafref {
-        path '/yanglib:modules-state/module/name';
-      }
+      // hack for now
+      type string;
+      // type leafref {
+      //   path '/yanglib:modules-state/module/name';
+      // }
     }
     leaf-list routers {
       type identityref {

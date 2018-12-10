@@ -49,7 +49,7 @@ paths:
                 type: array
                 items:
                   type: string
-                  format: leafref
+                  format: string
               routers:
                 type: array
                 items:
@@ -77,7 +77,7 @@ paths:
                 type: array
                 items:
                   type: string
-                  format: leafref
+                  format: string
               routers:
                 type: array
                 items:
@@ -101,7 +101,7 @@ paths:
                 type: array
                 items:
                   type: string
-                  format: leafref
+                  format: string
               routers:
                 type: array
                 items:
@@ -129,7 +129,7 @@ paths:
                 type: array
                 items:
                   type: string
-                  format: leafref
+                  format: string
               routers:
                 type: array
                 items:
@@ -153,7 +153,7 @@ paths:
                 type: array
                 items:
                   type: string
-                  format: leafref
+                  format: string
               routers:
                 type: array
                 items:

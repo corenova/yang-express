@@ -33,12 +33,12 @@ const port = argv.port
 const routers = [].concat(argv.router)
 const modules = [].concat(argv._)
 
-var yang = require('yang-js');
+var Yang = require('yang-js');
 var schema = require('..').bind({
 
 })
-var schemas = modules.map(name => yang.import(name))
-var store = new yang.Store('express')
+var schemas = modules.map(name => Yang.import(name))
+var store = new Yang.Store('express')
 store.add(schema)
 store.add(...schemas)
 store.set(config)

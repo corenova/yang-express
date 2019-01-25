@@ -31,11 +31,19 @@ module.exports = require('./yang-express.yang').bind({
     const express = this.use('express')
     const { app=express() } = input
     const server = this.get('/server')
-    const { routers=[], port } = server
+    const { routers=[], modules=[], port } = server
+    this.info(`listen on ${port} with %o routers for %o modules`, routers, modules);
+    
     const discover = (req, res, next) => {
       // dynamically fetch leaf-list of modules on every request
       const modules = [].concat(this.get('/server/modules')).filter(Boolean)
       res.locals.modules = modules
+      if (req.path === '/') {
+        res.locals = { model: this.store, match: this.store }
+        next();
+        return
+      }
+      
       for (let name of modules) {
         const model = this.access(name)
         const match = model.in(req.path)

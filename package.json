@@ -1,6 +1,6 @@
 {
   "name": "yang-express",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "YANG model-driven Express framework",
   "keywords": [
     "yang",
@@ -41,7 +41,7 @@
     "debug": "^4.1.1",
     "express": "^4.14.0",
     "js-yaml": "^3.6.1",
-    "yang-js": "^0.18.30",
+    "yang-js": "^0.19.2",
     "yang-swagger": "^1.2.4"
   },
   "devDependencies": {

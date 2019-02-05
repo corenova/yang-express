@@ -22,6 +22,7 @@ consumes:
   - application/json
 produces:
   - application/json
+response: []
 tags:
   - name: yang-express
     description: Operations related to yang-express
@@ -32,10 +33,14 @@ paths:
         - yang-express
       summary: View detail on server
       deprecated: false
+      security: []
+      parameters: []
       responses:
         '200':
           description: Expected response of server
           schema:
+            allOf: []
+            oneOf: []
             type: object
             properties:
               port:
@@ -60,10 +65,14 @@ paths:
         - yang-express
       summary: Update details on server
       deprecated: false
+      security: []
       parameters:
         - name: server
           in: body
+          required: false
           schema:
+            allOf: []
+            oneOf: []
             type: object
             properties:
               port:
@@ -83,11 +92,12 @@ paths:
                 items:
                   type: string
                   format: identityref
-          required: false
       responses:
         '200':
           description: Expected response of server
           schema:
+            allOf: []
+            oneOf: []
             type: object
             properties:
               port:
@@ -112,10 +122,14 @@ paths:
         - yang-express
       summary: Merge details on server
       deprecated: false
+      security: []
       parameters:
         - name: server
           in: body
+          required: false
           schema:
+            allOf: []
+            oneOf: []
             type: object
             properties:
               port:
@@ -135,11 +149,12 @@ paths:
                 items:
                   type: string
                   format: identityref
-          required: false
       responses:
         '200':
           description: Expected response of server
           schema:
+            allOf: []
+            oneOf: []
             type: object
             properties:
               port:
@@ -164,6 +179,10 @@ paths:
         - yang-express
       summary: Delete server from yang-express
       deprecated: false
+      security: []
+      parameters: []
       responses:
         '204':
           description: Expected response for delete
+    parameters: []
+definitions: {}

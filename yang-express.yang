@@ -44,9 +44,13 @@ module yang-express {
   feature body-parser {
     if-feature express;
   }
+  feature multipart {
+    if-feature express;
+  }
   feature restjson {
     if-feature router;
     if-feature body-parser;
+    if-feature multipart;
     description "YANG model-driven REST/JSON middleware router";
   }
   feature openapi {

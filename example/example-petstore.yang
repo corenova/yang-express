@@ -8,4 +8,11 @@ module example-petstore {
     leaf tag  { type string; }
   }
   list pet { key "id"; uses Pet; }
+  rpc upload {
+    input {
+      leaf file {
+        type binary;
+      }
+    }
+  }
 }

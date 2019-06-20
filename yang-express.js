@@ -14,11 +14,12 @@ const Yang = require('yang-js');
 
 module.exports = require('./yang-express.yang').bind({
 
-  '[express]':     require('express'),
-  '[router]':      require('express').Router,
-  '[body-parser]': require('body-parser'),
-  '[restjson]':    require('./lib/restjson'),
-  '[openapi]':     require('./lib/openapi'),
+  'feature(express)':     require('express'),
+  'feature(router)':      require('express').Router,
+  'feature(body-parser)': require('body-parser'),
+  'feature(multipart)':   require('multer'),
+  'feature(restjson)':    require('./lib/restjson'),
+  'feature(openapi)':     require('./lib/openapi'),
 
   server: {
     hostname() {

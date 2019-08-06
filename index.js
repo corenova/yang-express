@@ -1,3 +1,5 @@
+const debug = require('debug')('yang:express');
+
 const initialize = ({ modules = [], store }) => {
   const models = modules.map(name => store.access(name));
   return (req, res, next) => {
@@ -8,7 +10,7 @@ const initialize = ({ modules = [], store }) => {
     for (let model of models) {
       const match = model.in(req.path);
       if (match) {
-        this.debug(`discover: found '${name}' model for ${req.path}`)
+        debug(`discover: found '${model.name}' model for ${req.path}`);
         res.locals = { model, match }
         break;
       }

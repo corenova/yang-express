@@ -1,6 +1,6 @@
 {
   "name": "yang-express",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "YANG model-driven Express framework",
   "keywords": [
     "yang",
@@ -32,7 +32,7 @@
       "ietf-yang-types": "yang-js",
       "yang-meta-types": "yang-js",
       "yang-openapi": "yang-swagger",
-      "yang-express": "./yang-express.js"
+      "yang-web-store": "./yang-web-store.js"
     }
   },
   "dependencies": {

@@ -1,6 +1,6 @@
-module yang-express {
-  namespace "urn:ietf:params:xml:ns:yang:yang-express";
-  prefix express;
+module yang-web-store {
+  namespace "urn:ietf:params:xml:ns:yang:yang-web-store";
+  prefix web;
   yang-version 1.1;
 
   import ietf-inet-types { prefix inet; }

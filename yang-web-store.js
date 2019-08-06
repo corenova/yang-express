@@ -10,9 +10,9 @@ available for higher-order features to utilize it for associating
 additional routing endpoints.
 */
 
-const Yang = require('yang-js');
+require('yang-js');
 
-module.exports = require('./yang-express.yang').bind({
+module.exports = require('./yang-web-store.yang').bind({
 
   'feature(express)':     require('express'),
   'feature(router)':      require('express').Router,

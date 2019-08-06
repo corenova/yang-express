@@ -24,13 +24,13 @@ produces:
   - application/json
 response: []
 tags:
-  - name: yang-express
-    description: Operations related to yang-express
+  - name: yang-web-store
+    description: Operations related to yang-web-store
 paths:
-  '/yang-express:server':
+  '/yang-web-store:server':
     get:
       tags:
-        - yang-express
+        - yang-web-store
       summary: View detail on server
       deprecated: false
       security: []
@@ -62,7 +62,7 @@ paths:
                   format: identityref
     put:
       tags:
-        - yang-express
+        - yang-web-store
       summary: Update details on server
       deprecated: false
       security: []
@@ -119,7 +119,7 @@ paths:
                   format: identityref
     patch:
       tags:
-        - yang-express
+        - yang-web-store
       summary: Merge details on server
       deprecated: false
       security: []
@@ -176,8 +176,8 @@ paths:
                   format: identityref
     delete:
       tags:
-        - yang-express
-      summary: Delete server from yang-express
+        - yang-web-store
+      summary: Delete server from yang-web-store
       deprecated: false
       security: []
       parameters: []

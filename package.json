@@ -1,6 +1,6 @@
 {
   "name": "yang-express",
-  "version": "0.8.1",
+  "version": "0.8.2",
   "description": "YANG model-driven Express framework",
   "keywords": [
     "yang",
@@ -56,7 +56,7 @@
   "scripts": {
     "clean": "rimraf dist/*",
     "prebuild": "npm run clean -s && mkdir -p dist",
-    "build:api": "yang-swagger -f yaml -o swagger.yaml yang-express",
+    "build:api": "yang-swagger -f yaml -o swagger.yaml yang-web-store",
     "build": "npm run build:api",
     "prepublish": "npm run build",
     "pretest": "npm run build",

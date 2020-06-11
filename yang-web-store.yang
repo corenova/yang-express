@@ -47,6 +47,9 @@ module yang-web-store {
   feature multipart {
     if-feature express;
   }
+  feature discover {
+    if-feature router;
+  }
   feature restjson {
     if-feature router;
     if-feature body-parser;

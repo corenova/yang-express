@@ -1,6 +1,6 @@
 {
   "name": "yang-express",
-  "version": "0.8.2",
+  "version": "2.1.0",
   "description": "YANG model-driven Express framework",
   "keywords": [
     "yang",
@@ -25,13 +25,13 @@
   },
   "preferGlobal": true,
   "yang": {
+    "search": [
+      ".",
+      "yang-js",
+      "yang-swagger"
+    ],
     "resolve": {
       "example-petstore": "./example/example-petstore.yang",
-      "ietf-inet-types": "yang-js",
-      "ietf-yang-library": "yang-js",
-      "ietf-yang-types": "yang-js",
-      "yang-meta-types": "yang-js",
-      "yang-openapi": "yang-swagger",
       "yang-web-store": "./yang-web-store.js"
     }
   },
@@ -41,25 +41,25 @@
     "debug": "^4.1.1",
     "express": "^4.14.0",
     "js-yaml": "^3.13.1",
-    "multer": "^1.4.1",
-    "yang-swagger": "^2.0.1"
+    "multer": "^1.4.1"
   },
   "devDependencies": {
     "mocha": "^5.2.0",
     "rimraf": "^2.5.2",
     "should": "~3.1.3",
-    "yang-js": "^0.22.26"
+    "yang-js": "../yang-js",
+    "yang-swagger": "../yang-swagger"
   },
   "peerDependencies": {
-    "yang-js": "^0.22.0"
+    "yang-js": "^0.24.0",
+    "yang-swagger": "^2.3.0"
   },
   "scripts": {
     "clean": "rimraf dist/*",
-    "prebuild": "npm run clean -s && mkdir -p dist",
-    "build:api": "yang-swagger -f yaml -o swagger.yaml yang-web-store",
-    "build": "npm run build:api",
-    "prepublish": "npm run build",
-    "pretest": "npm run build",
+    "prepare:dist": "yarn clean -s && mkdir -p dist",
+    "prepare:api": "yang-swagger -f yaml -o swagger.yaml yang-web-store",
+    "prepare": "yarn prepare:dist",
+    "prepublishOnly": "yarn prepare:api",
     "test": "mocha",
     "start": "bin/yang-express -r restjson yang-express",
     "example:petstore": "NODE_ENV=example NODE_APP_INSTANCE=petstore bin/yang-express --router restjson example-petstore"

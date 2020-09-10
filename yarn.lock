@@ -801,10 +801,10 @@ xtend@^4.0.0:
   resolved "https://registry.yarnpkg.com/xtend/-/xtend-4.0.2.tgz#bb72779f5fa465186b1f438f674fa347fdb5db54"
   integrity sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==
 
-yang-js@^0.24.11:
-  version "0.24.11"
-  resolved "https://registry.yarnpkg.com/yang-js/-/yang-js-0.24.11.tgz#4ec3cd1912b066acd986d73b20fd439bf59cc91d"
-  integrity sha512-ACOvqbQ+NJeuEDPvONaXl0535ki2XDfOfMFNtr+2hVXcL+r9F6fYXuYx7MMgw9y6UMwscK7ukMrQBEFP01M+/A==
+yang-js@^0.24.15:
+  version "0.24.15"
+  resolved "https://registry.yarnpkg.com/yang-js/-/yang-js-0.24.15.tgz#a146f9b03c5438704935b1e253e1bd284ccc7d25"
+  integrity sha512-8JDq3vDQLcDyPZyYSvzxaRu+gdNHm9pie0VfySgJ3lYwYm9qi4YJXtyfxcfCQLif1ZS03B8iS0f1TRC7WsRqgw==
   dependencies:
     co "^4.6.0"
     debug "^4.1.1"

@@ -801,23 +801,10 @@ xtend@^4.0.0:
   resolved "https://registry.yarnpkg.com/xtend/-/xtend-4.0.2.tgz#bb72779f5fa465186b1f438f674fa347fdb5db54"
   integrity sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==
 
-yang-js@^0.24.15:
-  version "0.24.15"
-  resolved "https://registry.yarnpkg.com/yang-js/-/yang-js-0.24.15.tgz#a146f9b03c5438704935b1e253e1bd284ccc7d25"
-  integrity sha512-8JDq3vDQLcDyPZyYSvzxaRu+gdNHm9pie0VfySgJ3lYwYm9qi4YJXtyfxcfCQLif1ZS03B8iS0f1TRC7WsRqgw==
-  dependencies:
-    co "^4.6.0"
-    debug "^4.1.1"
-    delegates "^1.0.0"
-    indent-string "^2.1.0"
-    stacktrace-parser "^0.1.4"
-    xparse "^1.0.0"
-    yang-parser "^0.2.1"
-
-yang-js@^0.24.4:
-  version "0.24.4"
-  resolved "https://registry.yarnpkg.com/yang-js/-/yang-js-0.24.4.tgz#34f6772835df8e3756a1b42cd577a31766947cac"
-  integrity sha512-SGsxnsEXaRCfX+lMMVd3CeDfl0Opzfy9EzgbcPe0rsNuE6IfNL5oblu9aNqswht04VUTHYWsWMAFjTQPYeEofA==
+yang-js@^0.24.28:
+  version "0.24.28"
+  resolved "https://registry.yarnpkg.com/yang-js/-/yang-js-0.24.28.tgz#5b4a5e4a077353f785263caea8899bacf1f25a0c"
+  integrity sha512-90/UgvmKA0E00fwTMIBZY+J6xztn79s9xfVeQ+FEgak0X1td7m/lUYUxbslGZHsIwo0+cftmEQ54HX/OE0n60A==
   dependencies:
     co "^4.6.0"
     debug "^4.1.1"
@@ -834,14 +821,14 @@ yang-parser@^0.2.1:
   dependencies:
     comparse ">= 0.9.x"
 
-yang-swagger@^2.3.1:
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/yang-swagger/-/yang-swagger-2.3.1.tgz#6319173ac67edc46ae0fc378bdcef6f115b32bad"
-  integrity sha512-j0lfomdxFYR5/inErHb1uGU3BFEFUZauPaMAuO0uH9/A7C+PCjYmYGuZGkLIgYEVEfpMzyYwAkjl+ge2v97J+g==
+yang-swagger@^2.3.3:
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/yang-swagger/-/yang-swagger-2.3.3.tgz#2485580709744cf4b68cee7fe2cc48feef471f90"
+  integrity sha512-Io9NxmRSO+/TN8JpKiD56AvqsJFs8RpPjv4KXerPLJFORHYQ7uWv5EvT8+i7nCw1M1x099F0gpOrzWRqXFUuEg==
   dependencies:
     config "^3.0.1"
     debug "^4.1.1"
     js-yaml "^3.13.1"
     minimist "^1.2.0"
     traverse "^0.6.6"
-    yang-js "^0.24.4"
+    yang-js "^0.24.28"

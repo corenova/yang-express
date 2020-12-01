@@ -34,20 +34,15 @@ const routers = [].concat(argv.router)
 const modules = [].concat(argv._)
 
 var Yang = require('yang-js');
-var schema = require('..').bind({
-
-})
+var schema = require('../yang-web-store');
 var schemas = modules.map(name => Yang.import(name))
-var store = new Yang.Store('express')
-store.add(schema)
-store.add(...schemas)
-store.set(config)
+var store = new Yang.Store({ name: 'express' }).use(schema, ...schemas).set(config);
 
-store.in('/express:server').merge({
+store.in('/web:server').merge({
   port, routers, modules
 })
 
-store.in('/express:listen').do()
+store.in('/web:listen').do()
   .catch(function (err) {
     console.error(err);
   });

@@ -47,7 +47,7 @@
     "mocha": "^5.2.0",
     "rimraf": "^2.5.2",
     "should": "~3.1.3",
-    "yang-js": "^0.24.28",
+    "yang-js": "^0.24.33",
     "yang-swagger": "^2.3.3"
   },
   "peerDependencies": {
@@ -61,7 +61,7 @@
     "prepare": "yarn prepare:dist",
     "prepublishOnly": "yarn prepare:api",
     "test": "mocha",
-    "start": "bin/yang-express -r restjson yang-express",
+    "start": "bin/yang-express -r restjson yang-web-store",
     "example:petstore": "NODE_ENV=example NODE_APP_INSTANCE=petstore bin/yang-express --router restjson example-petstore"
   }
 }

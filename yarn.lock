@@ -814,12 +814,11 @@ yang-js@^0.24.28:
     xparse "^1.0.0"
     yang-parser "^0.2.1"
 
-yang-js@^0.24.33:
-  version "0.24.33"
-  resolved "https://registry.yarnpkg.com/yang-js/-/yang-js-0.24.33.tgz#a3e2c798a61cc7c5ffd19f8d19fe0e5122fe4694"
-  integrity sha512-m8TxeBAfe2N/fukn2TStroFLJyzCp4mzjFyFXlvW/ABmxqb16JOsYahIMKP1+Q9YomRTSSLhy/qJh/UBJf61pA==
+yang-js@^0.24.46:
+  version "0.24.46"
+  resolved "https://registry.yarnpkg.com/yang-js/-/yang-js-0.24.46.tgz#973ecc89ac18c7490a448dd0049681c2ae7e1415"
+  integrity sha512-Cv+VS4uVrKXgvphw6z6akQAaiiOjIUEMGLxRS6WMTlJZdjZDKvYWCEqVeuGI21IA2s+WRC5gJc/ofKVIjU2nKA==
   dependencies:
-    co "^4.6.0"
     debug "^4.1.1"
     delegates "^1.0.0"
     indent-string "^2.1.0"
